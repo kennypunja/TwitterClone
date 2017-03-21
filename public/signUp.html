@@ -16,7 +16,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-animate.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-sanitize.js"></script>
     <script src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.3.0.js"></script>
-
+    <script src="app.js"></script>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
 <link rel="stylesheet" href="loginPageCSS.css">
 
@@ -24,16 +24,25 @@
 
 </head>
 
-  <div class="wrapper">
-    <form class="form-signin">       
-      <h2 class="form-signin-heading"> Twitter!</h2>
-      <input  type="text" class="form-control" name="username" placeholder="Email Address" required="" autofocus="" />
-      <input  type="password" class="form-control" name="password" placeholder="Password" required=""/>      
+<body ng-app="app">
+<div>
+        <div class="modal-header">
+            <h3 class="modal-title">Sign up to TwitterClone!</h3>
+        </div>
+    <div class="modal-body">
+        <p> Full name </p>
+        <input type="text" class="form-control">
+        <p> Email Address </p>
+        <input type="text" class="form-control">
+        <p> Password </p>
+        <input type="password" class="form-control">
+    </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="ok()">OK</button>
+            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+        </div>
 
-      <button class="btn btn-lg btn-primary btn-block form-control" type="submit">Login</button> 
-      <h6 style="margin-left: 153px"> or </h6>
-      <button class="btn btn-lg btn-primary btn-block form-control" type="submit"> Sign Up </button> 
-    </form>
-  </div>
+</div>
+</body>
 
 </html>
