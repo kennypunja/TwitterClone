@@ -7,6 +7,7 @@ var session = require('express-session');
 var mysql = require('mysql');
 var crypto = require('crypto');
 var nodemailer = require('nodemailer');
+var FileStore = require('session-file-store')(session);
 
 var connection = mysql.createConnection({
 	host: 'localhost',
@@ -24,8 +25,9 @@ connection.connect(function(err){
 });
 
 var mail = nodemailer.createTransport({
-	host: 'smtp.gmail.com',
-	port: 465,
+	//host: 'smtp.gmail.com',
+	//port: 465,
+	service: 'gmail',
 	auth:{
 		user: 'twittercse356@gmail.com',
 		pass: 'cse356666'
@@ -34,10 +36,9 @@ var mail = nodemailer.createTransport({
 
 app.use(session({
 	name: 'chicken',
-	secret: 'I love chicken',
+	secret: 'no secret',
 	saveUninitialized: true,
-	resave: true,
-	cookie: {secure: true}
+	resave: true
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -49,6 +50,8 @@ app.get('/', function(req,res){
 	if(typeof req.session.user === 'undefined'){
 		res.redirect('/login');
 	}else{
+		console.log('in here');
+		console.log(req.session.user);
 		res.sendFile('/index.html',{root: __dirname + '/public'});
 	}
 })
@@ -121,7 +124,7 @@ app.post('/login', function(req,res){
 						})
 					}else{
 						req.session.user = req.body.username;
-						var hour = 24;
+						var hour = 3600000;
 						req.session.cookie.expires = new Date(Date.now()+hour);
 						req.session.cookie.maxAge = hour;
 						res.send({

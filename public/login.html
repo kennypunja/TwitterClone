@@ -25,12 +25,12 @@
 </head>
   <body ng-app= "app">
   <div class="wrapper" ng-controller="LoginController">
-    <form class="form-signin">       
+    <form class="form-signin" action = "/login" method="POST">       
       <h2 class="form-signin-heading"> Twitter!</h2>
       <input  type="text" class="form-control" name="username" placeholder="Email Address" autofocus="" />
       <input  type="password" class="form-control" name="password" placeholder="Password" />      
 
-      <button class="btn btn-lg btn-primary btn-block form-control" >Login</button> 
+      <button class="btn btn-lg btn-primary btn-block form-control" type = "submit">Login</button> 
       <h6 style="margin-left: 153px"> or </h6>
       <button class="btn btn-lg btn-primary btn-block form-control" ng-click="signUpButton()"> Sign Up </button> 
     </form>
