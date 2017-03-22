@@ -14,12 +14,21 @@ const dateTime = Date.now();
 
 var url = 'mongodb://localhost:27017/twitter';
 
+mongoClient.connect(url,function(err,db){
+	assert.equal(null,err);
+	console.log("CONNECTION SUCCESS");
+
+	})
+
+/*
 var connection = mysql.createConnection({
 	host: 'localhost',
 	user: 'root',
 	password: 'root',
 	database: 'twitter'
-});
+});*/
+
+
 connection.connect(function(err){
 	if(err){
 		console.log(err)
