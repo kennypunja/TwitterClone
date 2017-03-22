@@ -12,8 +12,7 @@ var mongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 const dateTime = Date.now();
 
-var url = 'mongodb://ec2-52-90-176-234.compute-1.amazonaws.com
-:27017/twitter';
+var url = 'mongodb://52.90.176.234:27017/twitter';
 
 mongoClient.connect(url,function(err,db){
 	assert.equal(null,err);
@@ -21,18 +20,17 @@ mongoClient.connect(url,function(err,db){
 
 	})
 
-/*
-var connection = mysql.createConnection({
-	host: 'localhost',
-	user: 'root',
-	password: 'root',
-	database: 'twitter'
-});*/
 
+var connection = mysql.createConnection({
+	host: '52.54.224.209',
+	user: 'root',
+	password: 'cse356',
+	database: 'Twitter'
+});
 
 connection.connect(function(err){
 	if(err){
-		console.log(err)
+		console.log(err);
 	}
 	else{
 		console.log("connected to mysql");
@@ -95,25 +93,7 @@ app.post('/adduser', function(req,res){
 			});
 		}
 		else{
-			var data ='<p><a href="http://127.0.0.1:9000/verify?email='+req.body.email+'&key='+hash+'">To activate your account</a></p>';
-			mail.sendMail({
-				from: 'Twitter <twittercse356@gmail.com>',
-				to: req.body.email,
-				subject: 'Your activation code',
-				html: data
-			}, function(error, response){
-				if(error){
-					console.log(error);
-					res.send({
-						status: "error",
-						error: error
-					});
-				}else{
-					res.send({
-						status: "OK"
-					})
-				}
-			})
+			res.send({status: "OK"});
 		}
 	})
 		
@@ -434,6 +414,6 @@ app.post('/search',function(req,res){
 	})
 })
 
-app.listen(9000, "127.0.0.1",function(){
+app.listen(8080, "172.31.64.118",function(){
 	console.log("Server listening on port " + 9000);
 })
