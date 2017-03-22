@@ -33,6 +33,19 @@ app.config(['$urlRouterProvider','$stateProvider'],function($urlRouterProvider,$
 
 app.controller("mainCtrl",function($scope,$location,$http){
 
+	$http.get('/getAllTweets').success(function(res){
+		$scope.tweets = res;
+	})
+
+	$scope.searchTweets = function(){
+		var jsonPost = {
+			timestamp : $scope.searchTweet
+		}
+		$http.post('/searchTweets',jsonPost).success(function(res){
+			$scope.tweets = res;
+		})
+	}
+
 	$scope.logout = function(){
 		$http.post('/logout').success(function(res){
 			if(res.status === "OK"){

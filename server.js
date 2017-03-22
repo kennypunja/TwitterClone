@@ -360,6 +360,38 @@ mongoClient.connect(url,function(err,db){
 })
 })
 
+app.get('/getAllTweets',function(req,res){
+	mongoClient.connect(url,function(err,db){
+		assert.equal(null,err);
+
+		db.collection('tweets').find().toArray(function(err,doc){
+			res.send(doc);
+			db.close();
+		})
+	})
+})
+
+app.post('/searchTweets',function(req,res){
+	var newStamp = Number(req.body.timestamp);
+	console.log("this is time stamp" + newStamp)
+		mongoClient.connect(url,function(err,db){
+		assert.equal(null,err);
+		var query = {
+			timestamp: {
+				$lte:newStamp 
+			}
+		}
+		db.collection('tweets').find(query).toArray(function(err,doc){
+			if (doc != null){
+				res.send(doc)
+				console.log(doc)
+				db.close();
+			}
+		})
+
+	})
+})
+
 app.post('/search',function(req,res){
 	var newStamp = req.body.timestamp;
 	console.log("THIS IS TIME STAMP " + newStamp);
@@ -378,16 +410,6 @@ app.post('/search',function(req,res){
 			limit: limit
 		}
 
-		/*db.collection('tweets').findOne(query,function(err,result){
-			if(err){
-				res.send({
-					status: "error"
-				})
-			}
-			console.log("THIS IS RESULT")
-			console.log(result);		
-		})*/
-		var list = [];
 		db.collection('tweets').find(query).limit(limit).toArray(function(err,doc){
 			if (doc != null){
 				var response = {
@@ -395,6 +417,7 @@ app.post('/search',function(req,res){
 					items: doc,
 				}
 				res.send(response)
+				db.close();
 			}
 		})
 

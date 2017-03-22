@@ -33,7 +33,10 @@
   </div>
 </div>
  <nav class="navbar navbar-default">
+<input type="text" placeholder="Search Tweets" ng-model="searchTweet">
 <button type="button" class= "btn btn-outline-secondary" ng-click = "logout()"> Log Out </button>
+<button type="button" class= "btn btn-outline-secondary" ng-click = "searchTweets()"> Search! </button>
+
 </nav>
 </div>
 
@@ -48,6 +51,12 @@
       </div>
       <hr>
       <p> Place for Tweets </p>
+      <ul class="list-group" ng-repeat="tweet in tweets">
+      <li class="list-group-item">
+      <h6> {{tweet.username}} </h6>
+      <p> {{tweet.content}} </p>
+      </li>
+      <ul>
 </div>
 
 
