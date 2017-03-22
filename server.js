@@ -12,7 +12,8 @@ var mongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 const dateTime = Date.now();
 
-var url = 'mongodb://localhost:27017/twitter';
+var url = 'mongodb://ec2-52-90-176-234.compute-1.amazonaws.com
+:27017/twitter';
 
 mongoClient.connect(url,function(err,db){
 	assert.equal(null,err);
