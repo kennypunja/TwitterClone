@@ -10,13 +10,14 @@ var nodemailer = require('nodemailer');
 var FileStore = require('session-file-store')(session);
 var mongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
+const dateTime = Date.now();
 
-var url = 'mongodb://localhost:27017/test';
+var url = 'mongodb://localhost:27017/twitter';
 
 var connection = mysql.createConnection({
 	host: 'localhost',
 	user: 'root',
-	password: 'ASSwecan1995',
+	password: 'root',
 	database: 'twitter'
 });
 connection.connect(function(err){
@@ -302,15 +303,102 @@ app.post('/verify',function(req,res){
 })
 
 app.post('/additem', function(req,res){
-
+mongoClient.connect(url,function(err,db){
+	assert.equal(null,err);
+	console.log(req.body);
+	var timestamp = Math.floor(dateTime/1000);
+	var newDoc = {
+		content: req.body.content,
+		parent: req.body.parent,
+		username: req.session.user,
+		timestamp: timestamp
+	}
+	db.collection('tweets').insertOne(newDoc,function(err,result){
+		assert.equal(null,err);
+		db.close();
+		var resultToSend = {
+			status: "OK",
+			id: newDoc._id,
+		}
+		res.send(resultToSend);
+	})
+})
 })
 
-app.get('/item',function(req,res){
+app.get('/item/:id',function(req,res){
+mongoClient.connect(url,function(err,db){
+	assert.equal(null,err);
+	//console.log(req.query.id)
+	console.log("THIS IS ID");
+	console.log(req.params.id)
+	var id = require('mongodb').ObjectId(req.params.id);
+	var queryJson = {
+		_id: id
+	}
 
+
+	db.collection('tweets').findOne(queryJson,function(err,result){
+		if (err){
+			res.send({
+				status: "error"
+			})
+		}
+		console.log("THIS IS RESULT");
+		console.log(result);
+		db.close();
+		var resultToRespond = {
+			status: "OK",
+			item: {
+				id: result._id,
+				username: result.username,
+				content: result.content,
+				timestamp: result.timestamp
+			}
+		}
+		res.send(resultToRespond);
+	})
+})
 })
 
 app.post('/search',function(req,res){
+	var newStamp = req.body.timestamp;
+	console.log("THIS IS TIME STAMP " + newStamp);
+	var limit = Number(req.body.limit);
+	console.log("THIS IS LIMIt" + limit)
+	mongoClient.connect(url,function(err,db){
+		assert.equal(null,err);
+		var query = {
+			timestamp: {
+				$lte:newStamp 
+			}
+		}
 
+
+		var options = {
+			limit: limit
+		}
+
+		/*db.collection('tweets').findOne(query,function(err,result){
+			if(err){
+				res.send({
+					status: "error"
+				})
+			}
+			console.log("THIS IS RESULT")
+			console.log(result);		
+		})*/
+		var list = [];
+		db.collection('tweets').find(query).limit(limit).toArray(function(err,doc){
+			if (doc != null){
+				var response = {
+					status: "OK",
+					items: doc,
+				}
+				res.send(response)
+			}
+		})
+
+	})
 })
 
 app.listen(9000, "127.0.0.1",function(){

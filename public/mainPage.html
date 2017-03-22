@@ -23,6 +23,7 @@
 
 
 </head>
+<body ng-app="app">
 <div>
 <div class="jumbotron jumbotron-fluid">
   <div class="container">
@@ -38,10 +39,10 @@
 <div class="row">
   <div class="col-md-3"> Profile Column</div>
     <div class="col-md-6"> 
-      <p>News Feed Column </p>
+      <p> {{ lmao }} </p>
       <div class="container">
-        <textarea class="form-control" rows="3" placeholder="Write a tweet."></textarea>
-        <button type="button" id="tweetButton" class="btn btn-outline-primary"> Tweet </button>
+        <textarea class="form-control" rows="3" placeholder="Write a tweet" ng-model="tweet"></textarea>
+        <button type="button" id="tweetButton" class="btn btn-outline-primary" ng-click="item()"> Tweet </button>
       </div>
       <hr>
       <p> Place for Tweets </p>
@@ -50,5 +51,6 @@
 
 <div class="col-md-3"> Trending Column </div>
 </div>
+</body>
 
 </html>

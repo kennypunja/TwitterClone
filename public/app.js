@@ -32,6 +32,7 @@ app.config(['$urlRouterProvider','$stateProvider'],function($urlRouterProvider,$
 
 
 app.controller("mainCtrl",function($scope,$location,$http){
+
 	$scope.logout = function(){
 		$http.post('/logout').success(function(res){
 			if(res.status === "OK"){
@@ -42,7 +43,14 @@ app.controller("mainCtrl",function($scope,$location,$http){
 	}
 
 	$scope.additem = function(){
-		console.log($scope.contents);
+			var jsonToPost = {
+			content: $scope.tweet,
+			parent: 'none'
+		};
+
+		$http.post('/additem',jsonToPost).success(function(res){
+			console.log(res);
+		})
 	}
 })
 
