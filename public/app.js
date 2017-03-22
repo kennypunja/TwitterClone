@@ -1,5 +1,21 @@
-var app = angular.module('app',['ui.router', 'ui.bootstrap']);
+var app = angular.module('app',['ui.router', 'ui.bootstrap', 'ngRoute']);
 
+
+app.config(["$routeProvider", "$locationProvider", function($routeProvider, $locationProvider){
+    $routeProvider
+	.when("/", {
+		templateUrl: "index.html",
+		controller: "mainCtrl"
+	})
+	.when("/login", {
+		templateUrl: "login.html",
+		controller: "loginCtrl"
+	})
+    .when("/adduser",{
+      templateUrl: "signUp.html",
+      controller: "adduserCtrl"
+    });
+}]);
 /*
 app.config(['$urlRouterProvider','$stateProvider'],function($urlRouterProvider,$stateProvider){
 	$urlRouterProvider.otherwise('/');
@@ -15,26 +31,66 @@ app.config(['$urlRouterProvider','$stateProvider'],function($urlRouterProvider,$
 
 
 
-app.controller("MainController",function($scope,$location,$http){
+app.controller("mainCtrl",function($scope,$location,$http){
+	$scope.logout = function(){
+		$http.post('/logout').success(function(res){
+			if(res.status === "OK"){
+				window.location.href = "/";
+			}
 
+		})
+	}
+
+	$scope.additem = function(){
+		console.log($scope.contents);
+	}
 })
 
-app.controller("LoginController",function($scope,$location,$http,$uibModal){
+app.controller("loginCtrl",function($scope,$location,$http,$uibModal){
 
-	$scope.practiceTest = "Hi";
+	$scope.login = function(){
+		var data  = {
+			username : $scope.login.username,
+			password : $scope.login.password
+		}
+
+		$http.post('/login', data).success(function(res){
+			if(res.status ==="OK"){
+				window.location.href = "/";
+			}
+			else{
+				console.log(res)
+				$scope.loginInfo = "Fail to login";
+			}
+		})
+	}
 
 	$scope.signUpButton = function(){
 		    var modalInstance = $uibModal.open({
-            templateUrl: 'signUp.html',
-            controller: 'signUpController'
+            templateUrl: '/adduser',
+            controller: 'adduserCtrl'
         });
 
 	}
 })
 
-app.controller("signUpController",function($scope,$location,$http, $uibModalInstance){
+app.controller("adduserCtrl",function($scope,$location,$http, $uibModalInstance){
 	$scope.ok = function(){
-		$uibModalInstance.close();
+		var data = {
+			username : $scope.adduser.username,
+			password : $scope.adduser.password,
+			email : $scope.adduser.email
+		}
+		$http.post('/adduser',data).success(function(res){
+			if(res.status ==="OK"){
+				console.log(res)
+				$scope.adduserInfo = "Please verify your account"
+			}else{
+				console.log(res)
+				
+				$scope.adduserInfo = "Fail to signup"
+			}
+		})
 	}
 
 	$scope.cancel = function(){

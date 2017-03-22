@@ -8,6 +8,10 @@ var mysql = require('mysql');
 var crypto = require('crypto');
 var nodemailer = require('nodemailer');
 var FileStore = require('session-file-store')(session);
+var mongoClient = require('mongodb').MongoClient;
+var assert = require('assert');
+
+var url = 'mongodb://localhost:27017/test';
 
 var connection = mysql.createConnection({
 	host: 'localhost',
@@ -133,13 +137,19 @@ app.post('/login', function(req,res){
 					}
 					
 				}
+				else{
+					res.send({
+							status: "error",
+							error: "Can not find account!"
+						})
+				}
 			}
 		})
 })
 
 app.post('/logout',function(req,res){
-	if(typeof req.session.user === 'undefined'){
-		req.session.destory(function(err){
+	if(typeof req.session.user != 'undefined'){
+		req.session.destroy(function(err){
 			if(err){
 				res.send({
 					status: "error",
