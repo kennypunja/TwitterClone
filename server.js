@@ -385,7 +385,13 @@ app.post('/searchTweets',function(req,res){
 app.post('/search',function(req,res){
 	var newStamp = req.body.timestamp;
 	console.log("THIS IS TIME STAMP " + newStamp);
-	var limit = Number(req.body.limit);
+	var limit = 0;
+	if (req.body.length == 1){
+		limit = 25;
+	}
+	else{
+		limit = Number(req.body.limit)
+	}
 	console.log("THIS IS LIMIt" + limit)
 	mongoClient.connect(url,function(err,db){
 		assert.equal(null,err);
