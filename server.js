@@ -383,15 +383,9 @@ app.post('/searchTweets',function(req,res){
 })
 
 app.post('/search',function(req,res){
-	var newStamp = req.body.timestamp;
+	var newStamp = req.body.timestamp || dateTime;
 	console.log("THIS IS TIME STAMP " + newStamp);
-	var limit = 0;
-	if (req.body.length == 1){
-		limit = 25;
-	}
-	else{
-		limit = Number(req.body.limit)
-	}
+	var limit = Number(req.body.limit) || 25;
 	console.log("THIS IS LIMIt" + limit)
 	mongoClient.connect(url,function(err,db){
 		assert.equal(null,err);
@@ -408,12 +402,24 @@ app.post('/search',function(req,res){
 
 		db.collection('tweets').find(query).limit(limit).toArray(function(err,doc){
 			if (doc != null){
-				var response = {
-					status: "OK",
-					items: doc,
+				var list = [];
+				for (var i = 0; i<doc.length || function(){
+				  var response = {
+				  	status: "OK",
+				  	items: list
+				  }
+				  res.send(response)
+				  db.close()
+				 }(),false; i++){
+					var json = {
+						content: doc[i].content,
+						parent: doc[i].parent,
+						username: doc[i].username,
+						timestamp: doc[i].timestamp,
+						id: doc[i]._id
+					}
+					list.push(json);
 				}
-				res.send(response)
-				db.close();
 			}
 		})
 
