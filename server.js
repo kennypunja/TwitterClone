@@ -392,6 +392,7 @@ app.post('/search',function(req,res){
 		var query;
 		if(req.body.timestamp != null){
 			console.log("in 1");
+			console.log(req.body.timestamp);
 			query = {
 				timestamp: {
 					$lte:Number(req.body.timestamp) 
@@ -405,6 +406,7 @@ app.post('/search',function(req,res){
 				}
 			}
 		}
+		console.log(query);
 		
 
 		if (req.body.limit != null){
