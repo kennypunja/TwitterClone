@@ -391,9 +391,10 @@ app.post('/search',function(req,res){
 		assert.equal(null,err);
 		var query;
 		if(req.body.timestamp != null){
+			console.log("in 1");
 			query = {
 				timestamp: {
-					$lte:req.body.timestamp 
+					$lte:Number(req.body.timestamp) 
 				}
 			}
 		}
