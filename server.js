@@ -63,8 +63,8 @@ app.get('/', function(req,res){
 	if(typeof req.session.user === 'undefined'){
 		res.redirect('/login');
 	}else{
-		console.log('in here');
-		console.log(req.session.user);
+		//console.log('in here');
+		//console.log(req.session.user);
 		res.sendFile('/index.html',{root: __dirname + '/public'});
 	}
 })
@@ -295,7 +295,7 @@ app.post('/verify',function(req,res){
 app.post('/additem', function(req,res){
 mongoClient.connect(url,function(err,db){
 	assert.equal(null,err);
-	console.log(req.body);
+	//console.log(req.body);
 	var timestamp = Math.floor(dateTime/1000);
 	var newDoc = {
 		content: req.body.content,
@@ -319,8 +319,8 @@ app.get('/item/:id',function(req,res){
 mongoClient.connect(url,function(err,db){
 	assert.equal(null,err);
 	//console.log(req.query.id)
-	console.log("THIS IS ID");
-	console.log(req.params.id)
+	//console.log("THIS IS ID");
+	//console.log(req.params.id)
 	var id = require('mongodb').ObjectId(req.params.id);
 	var queryJson = {
 		_id: id
@@ -333,8 +333,8 @@ mongoClient.connect(url,function(err,db){
 				status: "error"
 			})
 		}
-		console.log("THIS IS RESULT");
-		console.log(result);
+		//console.log("THIS IS RESULT");
+		//console.log(result);
 		db.close();
 		var resultToRespond = {
 			status: "OK",
@@ -363,7 +363,7 @@ app.get('/getAllTweets',function(req,res){
 
 app.post('/searchTweets',function(req,res){
 	var newStamp = Number(req.body.timestamp);
-	console.log("this is time stamp" + newStamp)
+	//console.log("this is time stamp" + newStamp)
 		mongoClient.connect(url,function(err,db){
 		assert.equal(null,err);
 		var query = {
@@ -374,7 +374,7 @@ app.post('/searchTweets',function(req,res){
 		db.collection('tweets').find(query).toArray(function(err,doc){
 			if (doc != null){
 				res.send(doc)
-				console.log(doc)
+				//console.log(doc)
 				db.close();
 			}
 		})
@@ -383,17 +383,28 @@ app.post('/searchTweets',function(req,res){
 })
 
 app.post('/search',function(req,res){
-	var newStamp = req.body.timestamp || dateTime;
-	console.log("THIS IS TIME STAMP " + newStamp);
+	//var newStamp = req.body.timestamp || dateTime;
+	console.log(req.body);
 	//var limit = Number(req.body.limit) || 25;
 	//console.log("THIS IS LIMIt" + limit)
 	mongoClient.connect(url,function(err,db){
 		assert.equal(null,err);
-		var query = {
-			timestamp: {
-				$lte:newStamp 
+		var query;
+		if(req.body.timestamp != null){
+			query = {
+				timestamp: {
+					$lte:newStamp 
+				}
 			}
 		}
+		else{
+			query = {
+				timestamp: {
+					$lte:dateTime 
+				}
+			}
+		}
+		
 
 		if (req.body.limit != null){
 		db.collection('tweets').find(query).limit(Number(req.body.limit)).toArray(function(err,doc){
