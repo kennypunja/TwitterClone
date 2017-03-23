@@ -400,7 +400,7 @@ app.post('/search',function(req,res){
 		console.log('timestamp == null');
 		query = {
 			timestamp : {
-				$lte : dataTime;
+				$lte : dateTime
 			}
 		}
 	}
@@ -427,9 +427,10 @@ app.post('/search',function(req,res){
 		console.log(query);*/
 		
 
-		if (req.body.limit != null){
+	if (req.body.limit != null){
 		db.collection('tweets').find(query).limit(Number(req.body.limit)).toArray(function(err,doc){
 			if (doc != null){
+				console.log("found something "+doc.length);
 				var list = [];
 				for (var i = 0; i<=doc.length; i++){
 					if (i == doc.length){
@@ -459,6 +460,7 @@ app.post('/search',function(req,res){
 
 		db.collection('tweets').find(query).limit(25).toArray(function(err,doc){
 			if (doc != null){
+				console.log("found something "+doc.length);
 				var list = [];
 				for (var i = 0; i<=doc.length; i++){
 					if (i == doc.length){
