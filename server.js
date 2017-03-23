@@ -383,14 +383,18 @@ app.post('/searchTweets',function(req,res){
 })
 
 app.post('/search',function(req,res){
-	//var newStamp = req.body.timestamp || dateTime;
+	var newStamp = req.body.timestamp || dateTime;
 	console.log(req.body);
 	//var limit = Number(req.body.limit) || 25;
 	//console.log("THIS IS LIMIt" + limit)
 	mongoClient.connect(url,function(err,db){
 		assert.equal(null,err);
-		var query;
-		if(req.body.timestamp != null){
+		var query ={
+				timestamp: {
+					$lte:newStamp 
+				}
+			};
+		/*if(req.body.timestamp != null){
 			console.log("in 1");
 			console.log(req.body.timestamp);
 			query = {
@@ -406,7 +410,7 @@ app.post('/search',function(req,res){
 				}
 			}
 		}
-		console.log(query);
+		console.log(query);*/
 		
 
 		if (req.body.limit != null){
@@ -438,6 +442,7 @@ app.post('/search',function(req,res){
 		})
 	}
 	else{
+
 		db.collection('tweets').find(query).limit(25).toArray(function(err,doc){
 			if (doc != null){
 				var list = [];
