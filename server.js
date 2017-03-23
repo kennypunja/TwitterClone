@@ -403,14 +403,15 @@ app.post('/search',function(req,res){
 		db.collection('tweets').find(query).limit(limit).toArray(function(err,doc){
 			if (doc != null){
 				var list = [];
-				for (var i = 0; i<doc.length || function(){
-				  var response = {
-				  	status: "OK",
-				  	items: list
-				  }
-				  res.send(response)
-				  db.close()
-				 }(),false; i++){
+				for (var i = 0; i<doc.length; i++){
+					if (i == doc.length -1){
+						var response = {
+							status: "OK",
+							items: list,
+						}
+						res.send(response)
+						db.close()
+					}
 					var json = {
 						content: doc[i].content,
 						parent: doc[i].parent,
