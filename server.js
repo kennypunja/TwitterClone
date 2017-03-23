@@ -399,8 +399,8 @@ app.post('/search',function(req,res){
 		db.collection('tweets').find(query).limit(Number(req.body.limit)).toArray(function(err,doc){
 			if (doc != null){
 				var list = [];
-				for (var i = 0; i<doc.length; i++){
-					if (i == doc.length -1){
+				for (var i = 0; i<=doc.length; i++){
+					if (i == doc.length){
 						var response = {
 							status: "OK",
 							items: list,
@@ -424,8 +424,8 @@ app.post('/search',function(req,res){
 				db.collection('tweets').find(query).limit(25).toArray(function(err,doc){
 			if (doc != null){
 				var list = [];
-				for (var i = 0; i<doc.length; i++){
-					if (i == doc.length -1){
+				for (var i = 0; i<=doc.length; i++){
+					if (i == doc.length){
 						var response = {
 							status: "OK",
 							items: list,
