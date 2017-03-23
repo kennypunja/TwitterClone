@@ -40,9 +40,9 @@ app.controller("mainCtrl",function($scope,$location,$http){
 	$scope.searchTweets = function(){
 		var jsonPost;
 		if(($scope.searchTweet ==null && $scope.searchTweet =="") &&($scope.searchLimit != null && $scope.searchLimit != "")){
+			console.log("in 1");
 			console.log($scope.searchTweet);
 			console.log($scope.searchLimit);
-			console.log("in 1");
 			jsonPost = {
 				timestamp : null,
 			limit : $scope.searchLimit
@@ -50,7 +50,8 @@ app.controller("mainCtrl",function($scope,$location,$http){
 		}
 		else if(($scope.searchLimit == null && $scope.searchLimit == "") && ($scope.searchTweet !=null && $scope.searchTweet !="")){
 			console.log("in 2");
-			
+			console.log($scope.searchTweet);
+			console.log($scope.searchLimit);
 			jsonPost = {
 				timestamp : $scope.searchTweet,
 			limit : null
@@ -58,7 +59,8 @@ app.controller("mainCtrl",function($scope,$location,$http){
 		}
 		else if(($scope.searchTweet ==null && $scope.searchTweet =="") && ($scope.searchLimit == null && $scope.searchLimit == "")){
 			console.log("in 3");
-			
+			console.log($scope.searchTweet);
+			console.log($scope.searchLimit);
 			jsonPost = {
 				timestamp : null,
 			limit : null
@@ -67,6 +69,8 @@ app.controller("mainCtrl",function($scope,$location,$http){
 		else{
 			
 			console.log("in 4");
+			console.log($scope.searchTweet);
+			console.log($scope.searchLimit);
 			jsonPost = {
 			timestamp : $scope.searchTweet,
 			limit : $scope.searchLimit
