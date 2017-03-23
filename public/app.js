@@ -38,10 +38,40 @@ app.controller("mainCtrl",function($scope,$location,$http){
 	//})
 
 	$scope.searchTweets = function(){
-		var jsonPost = {
-			timestamp : $scope.searchTweet
+		var jsonPost;
+		if($scope.searchTweet ==null){
+			console.log("in 1");
+			jsonPost = {
+				timestamp : null,
+			limit : $scope.searchLimit
+			};
 		}
-		$http.post('/searchTweets',jsonPost).success(function(res){
+		else if($scope.searchLimit == null){
+			console.log("in 2");
+			
+			jsonPost = {
+				timestamp : $scope.searchTweet,
+			limit : null
+			}
+		}
+		else if($scope.searchTweet ==null && $scope.searchLimit == null){
+			console.log("in 3");
+			
+			jsonPost = {
+				timestamp : null,
+			limit : null
+			}
+		}
+		else{
+			
+			console.log("in 4");
+			jsonPost = {
+			timestamp : $scope.searchTweet,
+			limit : $scope.searchLimit
+		}
+		}
+		
+		$http.post('/search',jsonPost).success(function(res){
 			$scope.tweets = res;
 		})
 	}
@@ -62,7 +92,13 @@ app.controller("mainCtrl",function($scope,$location,$http){
 		};
 
 		$http.post('/additem',jsonToPost).success(function(res){
-			console.log(res);
+			if(res.status === "OK"){
+			 alert("Tweet id: "+res.id+ "was posted");
+			}
+			else{
+				alert("Fail");
+			}
+			//console.log(res);
 		})
 	}
 })
