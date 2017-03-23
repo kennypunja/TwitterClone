@@ -39,14 +39,14 @@ app.controller("mainCtrl",function($scope,$location,$http){
 
 	$scope.searchTweets = function(){
 		var jsonPost;
-		if($scope.searchTweet ==null){
+		if($scope.searchTweet ==null &&$scope.searchLimit != null){
 			console.log("in 1");
 			jsonPost = {
 				timestamp : null,
 			limit : $scope.searchLimit
 			};
 		}
-		else if($scope.searchLimit == null){
+		else if($scope.searchLimit == null && $scope.searchTweet !=null){
 			console.log("in 2");
 			
 			jsonPost = {
