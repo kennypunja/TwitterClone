@@ -436,7 +436,7 @@ app.post('/search',function(req,res){
 		console.log(query);*/
 		
 
-	if (req.body.limit != null){
+	if (req.body.limit != null && req.body.limit != ""){
 		db.collection('tweets').find(query).limit(Number(req.body.limit)).toArray(function(err,doc){
 			if (doc != null){
 				//console.log("found something "+doc.length);
