@@ -77,7 +77,7 @@ app.controller("mainCtrl",function($scope,$location,$http){
 		}
 		}*/
 		var time, lim;
-		if ($scope.searchTweet ===""){
+		if($scope.searchTweet ===""){
 			$scope.searchTweet = null;
 		}
 		if($scope.limit ===""){
@@ -88,7 +88,7 @@ app.controller("mainCtrl",function($scope,$location,$http){
 		}
 
 		var jsonPost = {
-			timestamp: lim,
+			timestamp: time,
 			limit: $scope.searchLimit
 		}
 		console.log(jsonPost);
