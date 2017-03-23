@@ -408,20 +408,23 @@ app.post('/search',function(req,res){
 						res.send(response)
 						db.close()
 					}
-					var json = {
+					else{
+						var json = {
 						content: doc[i].content,
 						parent: doc[i].parent,
 						username: doc[i].username,
 						timestamp: doc[i].timestamp,
 						id: doc[i]._id
+						}
+						list.push(json);
 					}
-					list.push(json);
+					
 				}
 			}
 		})
 	}
 	else{
-				db.collection('tweets').find(query).limit(25).toArray(function(err,doc){
+		db.collection('tweets').find(query).limit(25).toArray(function(err,doc){
 			if (doc != null){
 				var list = [];
 				for (var i = 0; i<=doc.length; i++){
@@ -433,14 +436,17 @@ app.post('/search',function(req,res){
 						res.send(response)
 						db.close()
 					}
-					var json = {
+					else{
+						var json = {
 						content: doc[i].content,
 						parent: doc[i].parent,
 						username: doc[i].username,
 						timestamp: doc[i].timestamp,
 						id: doc[i]._id
+						}
+						list.push(json);
 					}
-					list.push(json);
+					
 				}
 			}
 		})
