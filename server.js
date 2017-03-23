@@ -7,7 +7,7 @@ var session = require('express-session');
 var mysql = require('mysql');
 var crypto = require('crypto');
 var nodemailer = require('nodemailer');
-var FileStore = require('session-file-store')(session);
+//var FileStore = require('session-file-store')(session);
 var mongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 const dateTime = Date.now();
@@ -57,7 +57,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: true
 }));
-app.use(require('morgan')('dev'));
+//app.use(require('morgan')('dev'));
 
 app.get('/', function(req,res){
 	if(typeof req.session.user === 'undefined'){
@@ -398,7 +398,7 @@ app.post('/search',function(req,res){
 	//console.log("THIS IS LIMIt" + limit)
 	var query;
 	if(req.body.timestamp != null){
-		console.log('timestamp != null');
+		//console.log('timestamp != null');
 		query = {
 			timestamp : {
 				$lte : req.body.timestamp
@@ -406,14 +406,14 @@ app.post('/search',function(req,res){
 		}
 	}
 	else{
-		console.log('timestamp == null');
+		//console.log('timestamp == null');
 		query = {
 			timestamp : {
 				$lte : dateTime
 			}
 		}
 	}
-	console.log(query)
+	//console.log(query)
 	mongoClient.connect(url,function(err,db){
 		assert.equal(null,err);
 
@@ -439,7 +439,7 @@ app.post('/search',function(req,res){
 	if (req.body.limit != null){
 		db.collection('tweets').find(query).limit(Number(req.body.limit)).toArray(function(err,doc){
 			if (doc != null){
-				console.log("found something "+doc.length);
+				//console.log("found something "+doc.length);
 				var list = [];
 				for (var i = 0; i<=doc.length; i++){
 					if (i == doc.length){
@@ -469,7 +469,7 @@ app.post('/search',function(req,res){
 
 		db.collection('tweets').find(query).limit(25).toArray(function(err,doc){
 			if (doc != null){
-				console.log("found something "+doc.length);
+				//console.log("found something "+doc.length);
 				var list = [];
 				for (var i = 0; i<=doc.length; i++){
 					if (i == doc.length){
@@ -477,7 +477,7 @@ app.post('/search',function(req,res){
 							status: "OK",
 							items: list,
 						}
-						console.log(response.items);
+						//console.log(response.items);
 						res.send(response)
 						db.close()
 					}
