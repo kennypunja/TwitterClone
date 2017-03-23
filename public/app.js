@@ -38,7 +38,7 @@ app.controller("mainCtrl",function($scope,$location,$http){
 	//})
 	$scope.getItem = function(){
 		query = '/item/'+$scope.tweetId;
-		var result[];
+		var result = [];
 		$http.get(query).success(function(res){
 			result.push(res.item);
 			$scope.tweets = result;
