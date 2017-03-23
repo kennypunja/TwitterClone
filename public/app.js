@@ -39,14 +39,14 @@ app.controller("mainCtrl",function($scope,$location,$http){
 
 	$scope.searchTweets = function(){
 		var jsonPost;
-		if($scope.searchTweet ==null &&$scope.searchLimit != null){
+		if(($scope.searchTweet ==null || $scope.searchTweet =="") &&($scope.searchLimit != null || $scope.searchLimit != "")){
 			console.log("in 1");
 			jsonPost = {
 				timestamp : null,
 			limit : $scope.searchLimit
 			};
 		}
-		else if($scope.searchLimit == null && $scope.searchTweet !=null){
+		else if(($scope.searchLimit == null || $scope.searchLimit == "") && ($scope.searchTweet !=null || $scope.searchTweet !="")){
 			console.log("in 2");
 			
 			jsonPost = {
@@ -54,7 +54,7 @@ app.controller("mainCtrl",function($scope,$location,$http){
 			limit : null
 			}
 		}
-		else if($scope.searchTweet ==null && $scope.searchLimit == null){
+		else if(($scope.searchTweet ==null || $scope.searchTweet =="") && ($scope.searchLimit == null || $scope.searchLimit == "")){
 			console.log("in 3");
 			
 			jsonPost = {
@@ -72,6 +72,7 @@ app.controller("mainCtrl",function($scope,$location,$http){
 		}
 		
 		$http.post('/search',jsonPost).success(function(res){
+			console.log(res);
 			$scope.tweets = res;
 		})
 	}
