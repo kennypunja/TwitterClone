@@ -76,15 +76,17 @@ app.controller("mainCtrl",function($scope,$location,$http){
 			limit : $scope.searchLimit
 		}
 		}*/
-
+		if(!angular.isUndefined($scope.searchTweet)){
+			$scope.searchTweet = parseInt($scope.searchTweet);
+		}
 		var jsonPost = {
 			timestamp: $scope.searchTweet,
 			limit: $scope.searchLimit
 		}
-		
+		console.log(jsonPost);
 		$http.post('/search',jsonPost).success(function(res){
 			console.log(res);
-			$scope.tweets = res;
+			$scope.tweets = res.items;
 		})
 	}
 
