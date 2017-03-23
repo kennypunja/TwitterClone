@@ -293,7 +293,14 @@ app.post('/verify',function(req,res){
 })
 
 app.post('/additem', function(req,res){
-mongoClient.connect(url,function(err,db){
+	if(typeof req.session.user == 'undefined'){
+		res.send({
+			status: "error",
+			error: "You are not logged in as any user!"
+		})
+	}
+	else{
+		mongoClient.connect(url,function(err,db){
 	assert.equal(null,err);
 	//console.log(req.body);
 	var timestamp = Math.floor(dateTime/1000);
@@ -313,6 +320,8 @@ mongoClient.connect(url,function(err,db){
 		res.send(resultToSend);
 	})
 })
+	}
+
 })
 
 app.get('/item/:id',function(req,res){
