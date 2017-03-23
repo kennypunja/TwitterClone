@@ -393,7 +393,7 @@ app.post('/search',function(req,res){
 		if(req.body.timestamp != null){
 			query = {
 				timestamp: {
-					$lte:newStamp 
+					$lte:req.body.timestamp 
 				}
 			}
 		}
