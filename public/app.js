@@ -33,9 +33,9 @@ app.config(['$urlRouterProvider','$stateProvider'],function($urlRouterProvider,$
 
 app.controller("mainCtrl",function($scope,$location,$http){
 
-	$http.get('/getAllTweets').success(function(res){
-		$scope.tweets = res;
-	})
+	//$http.get('/getAllTweets').success(function(res){
+	//	$scope.tweets = res;
+	//})
 
 	$scope.searchTweets = function(){
 		var jsonPost = {
