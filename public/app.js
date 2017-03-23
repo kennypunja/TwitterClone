@@ -36,46 +36,13 @@ app.controller("mainCtrl",function($scope,$location,$http){
 	//$http.get('/getAllTweets').success(function(res){
 	//	$scope.tweets = res;
 	//})
-
+	$scope.getItem = function(){
+		query = '/get/'+$scope.tweetId;
+		$http.get(query).success(function(res){
+			console.log(res);
+		})
+	}
 	$scope.searchTweets = function(){
-		//var jsonPost;
-		/*if(($scope.searchTweet ==null && $scope.searchTweet =="") &&($scope.searchLimit != null && $scope.searchLimit != "")){
-			console.log("in 1");
-			console.log($scope.searchTweet);
-			console.log($scope.searchLimit);
-			jsonPost = {
-				timestamp : null,
-			limit : $scope.searchLimit
-			};
-		}
-		else if(($scope.searchLimit == null && $scope.searchLimit == "") && ($scope.searchTweet !=null && $scope.searchTweet !="")){
-			console.log("in 2");
-			console.log($scope.searchTweet);
-			console.log($scope.searchLimit);
-			jsonPost = {
-				timestamp : $scope.searchTweet,
-			limit : null
-			}
-		}
-		else if(($scope.searchTweet ==null && $scope.searchTweet =="") && ($scope.searchLimit == null && $scope.searchLimit == "")){
-			console.log("in 3");
-			console.log($scope.searchTweet);
-			console.log($scope.searchLimit);
-			jsonPost = {
-				timestamp : null,
-			limit : null
-			}
-		}
-		else{
-			
-			console.log("in 4");
-			console.log($scope.searchTweet);
-			console.log($scope.searchLimit);
-			jsonPost = {
-			timestamp : $scope.searchTweet,
-			limit : $scope.searchLimit
-		}
-		}*/
 		var time, lim;
 		if($scope.searchTweet ===""){
 			$scope.searchTweet = null;

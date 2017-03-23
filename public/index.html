@@ -36,8 +36,15 @@
 <input type="text" placeholder="Search Tweets Timestamp" ng-model="searchTweet">
 <input type="text" placeholder="Search Tweets limit" ng-model="searchLimit">
 
+
+
+
 <button type="button" class= "btn btn-outline-secondary" ng-click = "logout()"> Log Out </button>
 <button type="button" class= "btn btn-outline-secondary" ng-click = "searchTweets()"> Search! </button>
+
+<hr>
+<input type="text" placeholder="Get tweet id" ng-model="tweetId">
+<button type="button" class= "btn btn-outline-secondary" ng-click = "getItem()"> Get Item! </button>
 
 </nav>
 </div>
@@ -66,3 +73,5 @@
 </div>
 </body>
 </html>
+
+{"status":"OK","item":{"id":"58d409acf0242c7d7d013872","username":"chicken1","content":"im chicken2","timestamp":1490290917}}
