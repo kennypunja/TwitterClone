@@ -38,8 +38,11 @@ app.controller("mainCtrl",function($scope,$location,$http){
 	//})
 	$scope.getItem = function(){
 		query = '/item/'+$scope.tweetId;
+		var result[];
 		$http.get(query).success(function(res){
-			console.log(res);
+			result.push(res.item);
+			$scope.tweets = result;
+
 		})
 	}
 	$scope.searchTweets = function(){
