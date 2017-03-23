@@ -468,6 +468,7 @@ app.post('/search',function(req,res){
 							status: "OK",
 							items: list,
 						}
+						console.log(response.items.length);
 						res.send(response)
 						db.close()
 					}
