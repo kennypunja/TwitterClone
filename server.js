@@ -387,13 +387,27 @@ app.post('/search',function(req,res){
 	console.log(req.body);
 	//var limit = Number(req.body.limit) || 25;
 	//console.log("THIS IS LIMIt" + limit)
+	var query;
+	if(req.body.timestamp != null){
+		console.log('timestamp != null');
+		query = {
+			timestamp : {
+				$lte : req.body.timestamp
+			}
+		}
+	}
+	else{
+		console.log('timestamp == null');
+		query = {
+			timestamp : {
+				$lte : dataTime;
+			}
+		}
+	}
+	console.log(query)
 	mongoClient.connect(url,function(err,db){
 		assert.equal(null,err);
-		var query ={
-				timestamp: {
-					$lte:newStamp 
-				}
-			};
+
 		/*if(req.body.timestamp != null){
 			console.log("in 1");
 			console.log(req.body.timestamp);
