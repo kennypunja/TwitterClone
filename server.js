@@ -385,8 +385,8 @@ app.post('/searchTweets',function(req,res){
 app.post('/search',function(req,res){
 	var newStamp = req.body.timestamp || dateTime;
 	console.log("THIS IS TIME STAMP " + newStamp);
-	var limit = Number(req.body.limit) || 25;
-	console.log("THIS IS LIMIt" + limit)
+	//var limit = Number(req.body.limit) || 25;
+	//console.log("THIS IS LIMIt" + limit)
 	mongoClient.connect(url,function(err,db){
 		assert.equal(null,err);
 		var query = {
@@ -399,8 +399,8 @@ app.post('/search',function(req,res){
 		var options = {
 			limit: limit
 		}
-
-		db.collection('tweets').find(query).limit(limit).toArray(function(err,doc){
+		if (req.body.limit != null){
+		db.collection('tweets').find(query).limit(Number(req.body.limit)).toArray(function(err,doc){
 			if (doc != null){
 				var list = [];
 				for (var i = 0; i<doc.length; i++){
@@ -423,7 +423,32 @@ app.post('/search',function(req,res){
 				}
 			}
 		})
-
+	}
+	else{
+				db.collection('tweets').find(query).limit(25).toArray(function(err,doc){
+			if (doc != null){
+				var list = [];
+				for (var i = 0; i<doc.length; i++){
+					if (i == doc.length -1){
+						var response = {
+							status: "OK",
+							items: list,
+						}
+						res.send(response)
+						db.close()
+					}
+					var json = {
+						content: doc[i].content,
+						parent: doc[i].parent,
+						username: doc[i].username,
+						timestamp: doc[i].timestamp,
+						id: doc[i]._id
+					}
+					list.push(json);
+				}
+			}
+		})
+	}
 	})
 })
 
