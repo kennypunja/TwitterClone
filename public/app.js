@@ -40,6 +40,8 @@ app.controller("mainCtrl",function($scope,$location,$http){
 	$scope.searchTweets = function(){
 		var jsonPost;
 		if(($scope.searchTweet ==null && $scope.searchTweet =="") &&($scope.searchLimit != null && $scope.searchLimit != "")){
+			console.log($scope.searchTweet);
+			console.log($scope.searchLimit);
 			console.log("in 1");
 			jsonPost = {
 				timestamp : null,
