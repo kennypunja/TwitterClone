@@ -395,10 +395,6 @@ app.post('/search',function(req,res){
 			}
 		}
 
-
-		var options = {
-			limit: limit
-		}
 		if (req.body.limit != null){
 		db.collection('tweets').find(query).limit(Number(req.body.limit)).toArray(function(err,doc){
 			if (doc != null){
