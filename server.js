@@ -12,7 +12,10 @@ var mongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 const dateTime = Date.now();
 
-var url = 'mongodb://52.90.176.234:27017/twitter';
+//var url = 'mongodb://52.90.176.234:27017/twitter';
+var url = 'mongodb://localhost:27017/twitter';
+
+
 
 mongoClient.connect(url,function(err,db){
 	assert.equal(null,err);
@@ -20,13 +23,21 @@ mongoClient.connect(url,function(err,db){
 
 	})
 
-
+/*
 var connection = mysql.createConnection({
 	host: '52.54.224.209',
 	user: 'root',
 	password: 'cse356',
 	database: 'Twitter'
 });
+*/
+
+var connection = mysql.createConnection({
+	host: 'localhost',
+	user: 'root',
+	password: 'root',
+	database: 'twitter'
+})
 
 connection.connect(function(err){
 	if(err){
@@ -499,6 +510,28 @@ app.post('/search',function(req,res){
 	})
 })
 
+app.delete('/item/:id',function(req,res){
+	console.log(req.params.id);
+	var id = require('mongodb').ObjectId(req.params.id);
+	mongoClient.connect(url,function(err,db){
+	assert.equal(null,err);
+	db.collection('tweets').remove({'_id': id},function(err,doc){
+		if (err){
+			console.log(err)
+			res.send("Failure");
+		}
+		else{
+			console.log("TWEET DELETED");
+			res.send("Success")
+		}
+	})
+})
+})
+/*
 app.listen(8080, "172.31.64.118",function(){
 	console.log("Server listening on port " + 9000);
+})*/
+
+app.listen(9000,"0.0.0.0",function(){
+	console.log("server listening on port " + 9000);
 })

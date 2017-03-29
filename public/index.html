@@ -35,12 +35,13 @@
  <nav class="navbar navbar-default">
 <input type="text" placeholder="Search Tweets Timestamp" ng-model="searchTweet">
 <input type="text" placeholder="Search Tweets limit" ng-model="searchLimit">
-
+<input type="text" placeholder="Delete Tweet by Id" ng-model="deleteTweetId">
 
 
 
 <button type="button" class= "btn btn-outline-secondary" ng-click = "logout()"> Log Out </button>
 <button type="button" class= "btn btn-outline-secondary" ng-click = "searchTweets()"> Search! </button>
+<button type"button" class= "btn btn-outline-secondary" ng-click ="deleteTweet()"> Delete Tweet </button>
 
 <hr>
 <input type="text" placeholder="Get tweet id" ng-model="tweetId">

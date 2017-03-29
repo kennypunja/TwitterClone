@@ -77,6 +77,16 @@ app.controller("mainCtrl",function($scope,$location,$http){
 		})
 	}
 
+	$scope.deleteTweet = function(){
+		console.log("DELETE TWEET CALLED")
+		var query = '/item/' + $scope.deleteTweetId;
+		$http.delete(query).success(function(res){
+			if(res.status == "OK"){
+				alert("TWEET DELETED");
+			}
+		})
+	}
+
 	$scope.additem = function(){
 			var jsonToPost = {
 			content: $scope.tweet,
