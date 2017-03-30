@@ -409,48 +409,46 @@ app.post('/search',function(req,res){
 	//console.log("THIS IS LIMIt" + limit)
 	var query;
 	if(req.body.timestamp != null){
-		//console.log('timestamp != null');
+		if (req.body.usernameSearch != null){
+		query = {
+			timestamp : {
+				$lte : req.body.timestamp
+			},
+			username : req.body.usernameSearch
+		}
+	}
+	else{
 		query = {
 			timestamp : {
 				$lte : req.body.timestamp
 			}
 		}
 	}
+}
 	else{
-		//console.log('timestamp == null');
+		if (req.body.usernameSearch != null){
 		query = {
 			timestamp : {
 				$lte : dateTime
+			},
+			username : req.body.usernameSearch
+		}
+	}
+	else{
+		query = { 
+			timestamp : {
+				$lte: dateTime
 			}
 		}
 	}
-	//console.log(query)
+}
 	mongoClient.connect(url,function(err,db){
 		assert.equal(null,err);
-
-		/*if(req.body.timestamp != null){
-			console.log("in 1");
-			console.log(req.body.timestamp);
-			query = {
-				timestamp: {
-					$lte:Number(req.body.timestamp) 
-				}
-			}
-		}
-		else{
-			query = {
-				timestamp: {
-					$lte:dateTime 
-				}
-			}
-		}
-		console.log(query);*/
 		
-
 	if (req.body.limit != null && req.body.limit != ""){
+
 		db.collection('tweets').find(query).limit(Number(req.body.limit)).toArray(function(err,doc){
 			if (doc != null){
-				//console.log("found something "+doc.length);
 				var list = [];
 				for (var i = 0; i<=doc.length; i++){
 					if (i == doc.length){
@@ -490,6 +488,7 @@ app.post('/search',function(req,res){
 						}
 						//console.log(response.items);
 						res.send(response)
+						console.log(response);
 						db.close()
 					}
 					else{
