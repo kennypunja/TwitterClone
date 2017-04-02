@@ -3,7 +3,7 @@ var bodyParser = require('body-parser');
 var fs = require('fs');
 var app = express();
 var serveStatic = require('serve-static');
-var session = require('express-session');
+var session = require('cookie-session');
 var mysql = require('mysql');
 var crypto = require('crypto');
 var nodemailer = require('nodemailer');
@@ -62,7 +62,9 @@ app.use(session({
 	name: 'chicken',
 	secret: 'no secret',
 	saveUninitialized: true,
-	resave: true
+	resave: false,
+	maxAge: 24 * 60 * 60 * 1000
+
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -130,9 +132,7 @@ app.post('/login', function(req,res){
 						})
 					}else{
 						req.session.user = req.body.username;
-						var hour = 3600000;
-						req.session.cookie.expires = new Date(Date.now()+hour);
-						req.session.cookie.maxAge = hour;
+						
 						res.send({
 							status: "OK"
 						})
