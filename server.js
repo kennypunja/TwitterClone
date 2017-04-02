@@ -554,6 +554,28 @@ app.delete('/item/:id',function(req,res){
 	})
 })
 })
+
+app.post('/follow',function(req,res){
+	console.log(req.body);
+	if(req.body.follow == true){
+		console.log("TRUE???")
+		connection.query('INSERT INTO Following VALUES('+ mysql.escape(req.session.user) + ',' + mysql.escape(req.body.username) + ')', function(err,result){
+		if(err){
+			console.log(err);
+			res.send({
+				status: "error",
+				error: err
+			});
+		}
+		else{
+			res.send({status: "OK"});
+		}
+	})
+	}
+	else{
+		console.log("FOLLOW IS NOT TRUE");
+	}
+})
 /*
 app.listen(8080, "172.31.64.118",function(){
 	console.log("Server listening on port " + 9000);

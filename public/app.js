@@ -103,6 +103,22 @@ app.controller("mainCtrl",function($scope,$location,$http){
 			//console.log(res);
 		})
 	}
+
+	$scope.follow = function(){
+		var jsonToPost = {
+			username: $scope.userToFollow,
+			follow: true
+		}
+
+		$http.post('/follow',jsonToPost).success(function(res){
+			if (res.status === "OK"){
+				alert("FOLLOWED");
+			}
+			else{
+				alert("Fail");
+			}
+		})
+	}
 })
 
 app.controller("loginCtrl",function($scope,$location,$http,$uibModal){

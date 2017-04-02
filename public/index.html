@@ -36,13 +36,12 @@
 <input type="text" placeholder="Search Tweets Timestamp" ng-model="searchTweet">
 <input type="text" placeholder="Search Tweets limit" ng-model="searchLimit">
 <input type="text" placeholder="Delete Tweet by Id" ng-model="deleteTweetId">
-
-
+<input type="text" placeholder="User to follow" ng-model="userToFollow">
 
 <button type="button" class= "btn btn-outline-secondary" ng-click = "logout()"> Log Out </button>
 <button type="button" class= "btn btn-outline-secondary" ng-click = "searchTweets()"> Search! </button>
 <button type"button" class= "btn btn-outline-secondary" ng-click ="deleteTweet()"> Delete Tweet </button>
-
+<button type="button" class="btn btn-outline-secondary" ng-click="follow()"> Follow User </button>
 <hr>
 <input type="text" placeholder="Get tweet id" ng-model="tweetId">
 <button type="button" class= "btn btn-outline-secondary" ng-click = "getItem()"> Get Item! </button>
