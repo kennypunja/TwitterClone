@@ -506,18 +506,57 @@ app.post('/search',function(req,res){
 				console.log(err)
 			}
 			if (doc != null){
-				//console.log("found something "+doc.length);
 				var list = [];
 				for (var i = 0; i<=doc.length; i++){
 					if (i == doc.length){
-						var response = {
-							status: "OK",
-							items: list,
+							if (req.body.following == "true"){
+								console.log("FOLLOWING = TRUE")
+								connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.session.user) + ';',function(err,result){
+								if(err){
+									console.log(err)
+								}
+								else{
+									var newList = [];
+
+									var string = JSON.stringify(result);
+									var jsonArrayOfFollowing = JSON.parse(string);
+									var parsingJsonArray = [];
+									for (var k = 0; k<=jsonArrayOfFollowing.length; k++){
+										if (k == jsonArrayOfFollowing.length){
+											for(var j = 0; j<=list.length; j++){
+												if(j == list.length){
+													console.log(newList);
+													var toReturn = {
+													status:"OK",
+													items: newList
+													}
+													res.send(toReturn);
+												}
+												else{
+													if(parsingJsonArray.indexOf(list[j].username) >= 0){
+														newList.push(list[j]);
+													}
+													else{
+													}
+												}
+											}
+										}
+										else{
+											parsingJsonArray.push(jsonArrayOfFollowing[k].User2)
+										}
+									}
+
+								}
+							})
 						}
-						//console.log(response.items);
-						res.send(response)
-						console.log(response);
-						db.close()
+						else{
+							console.log("NOT TRUE!!!!!!!")
+							var response = {
+								status: "OK",
+								items: list
+							}
+							res.send(response);
+						}
 					}
 					else{
 						var json = {
@@ -554,6 +593,66 @@ app.delete('/item/:id',function(req,res){
 	})
 })
 })
+
+app.get('/user/:username/followers',function(req,res){
+	console.log(req.params.username)
+	if(req.body.limit != null && req.body.limit != ""){
+		connection.query('SELECT User1 From Following where User2 =' + mysql.escape(req.params.username) + ' LIMIT ' + mysql.escape(req.body.limit) + ';',function(err,result){
+			if(err){
+				console.log(err);
+			}
+			else{
+				console.log(result)
+				res.send({status:"OK"});
+			}
+		})
+	}
+	else{
+		connection.query('SELECT User1 From Following where User2 =' + mysql.escape(req.params.username) + ' LIMIT 50;',function(err,result){
+			if(err){
+				console.log(err);
+			}
+			else{
+				var response = {
+					status: "OK",
+					users: result
+				}
+				res.send(response);
+			}
+		})
+	}
+})
+
+app.get('/user/:username/following',function(req,res){
+	console.log(req.params.username)
+	if(req.body.limit != null && req.body.limit != ""){
+		connection.query('SELECT User2 From Following where User1 =' + req.params.username + ' LIMIT ' + req.body.limit + ';',function(err,result){
+			if(err){
+				console.log(err);
+			}
+			else{
+				console.log(result)
+				res.send({status:"OK"});
+			}
+		})
+	}
+	else{
+		connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.params.username) + ' LIMIT 50;',function(err,result){
+			if(err){
+				console.log(err);
+			}
+			else{
+				var response = {
+					status: "OK",
+					users: result
+				}
+				res.send(response);
+			}
+		})
+	}
+})
+
+
 
 app.post('/follow',function(req,res){
 	console.log(req.body);
