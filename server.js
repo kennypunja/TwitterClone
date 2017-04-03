@@ -411,8 +411,8 @@ app.post('/search',function(req,res){
 
 	var q = req.body.q;
 
-	/*
-	THIS CODE WORKS BUT IM JUST COMMENTING IT OUT TO ONLY TEST OUT THE SEARCH. BUT ALSO THE IFS ARE WEIRD. NEED BETTER WAY oF HANdLIng
+	
+	//THIS CODE WORKS BUT IM JUST COMMENTING IT OUT TO ONLY TEST OUT THE SEARCH. BUT ALSO THE IFS ARE WEIRD. NEED BETTER WAY oF HANdLIng
 	if(req.body.timestamp != null){
 		if (req.body.usernameSearch != null){
 		query = {
@@ -446,7 +446,7 @@ app.post('/search',function(req,res){
 			}
 		}
 	}
-}*/
+}
 
 	/*var query = {
 		$text:{
@@ -473,7 +473,7 @@ app.post('/search',function(req,res){
 		
 	if (req.body.limit != null && req.body.limit != ""){
 
-		db.collection('tweets').find(query).sort({score:{$meta:"textScore"}}).limit(Number(req.body.limit)).toArray(function(err,doc){
+		db.collection('tweets').find(query)/*.sort({score:{$meta:"textScore"}})*/.limit(Number(req.body.limit)).toArray(function(err,doc){
 			if (doc != null){
 				var list = [];
 				for (var i = 0; i<=doc.length; i++){
@@ -501,7 +501,7 @@ app.post('/search',function(req,res){
 		})
 	}
 	else{
-		db.collection('tweets').find({$text:{$search:q}},{score:{$meta:"textScore"}}).sort({score:{$meta:"textScore"}}).limit(25).toArray(function(err,doc){
+		db.collection('tweets').find(/*{$text:{$search:q}},{score:{$meta:"textScore"}}*/query)./*sort({score:{$meta:"textScore"}}).*/limit(25).toArray(function(err,doc){
 			if(err){
 				console.log(err)
 			}
