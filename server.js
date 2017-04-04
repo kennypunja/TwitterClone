@@ -404,105 +404,65 @@ app.post('/searchTweets',function(req,res){
 
 app.post('/search',function(req,res){
 	var newStamp = req.body.timestamp || dateTime;
+	console.log("THIS IS NEW STAMP"  + newStamp)
 	console.log(req.body);
 	//var limit = Number(req.body.limit) || 25;
 	//console.log("THIS IS LIMIt" + limit)
-	var query;
 
 	var q = req.body.q;
-
-	/*
-	THIS CODE WORKS BUT IM JUST COMMENTING IT OUT TO ONLY TEST OUT THE SEARCH. BUT ALSO THE IFS ARE WEIRD. NEED BETTER WAY oF HANdLIng
-	if(req.body.timestamp != null){
-		if (req.body.usernameSearch != null){
-		query = {
-			timestamp : {
-				$lte : req.body.timestamp
-			},
-			username : req.body.usernameSearch
-		}
-	}
-	else{
-		query = {
-			timestamp : {
-				$lte : req.body.timestamp
-			}
-		}
-	}
-}
-	else{
-		if (req.body.usernameSearch != null){
-		query = {
-			timestamp : {
-				$lte : dateTime
-			},
-			username : req.body.usernameSearch
-		}
-	}
-	else{
-		query = { 
-			timestamp : {
-				$lte: dateTime
-			}
-		}
-	}
-}*/
-
-	/*var query = {
-		$text:{
-			$search: q
-		},
-		$score:{
-			$meta: "textScore"
-		}
-	}*/
-
-	/*var query = {
-		$text: {$search: q }
-		}
-		, {score: 
-		{$meta: 'textScore'}
-
-		{$text:{$search:q}},{score:{$meta:"textScore"}
-	};*/
-
 	
+	var query;
+if (q != null){
+	if(req.body.username != null){
+		query = {
+			$text:{
+				$search:q
+			},
+			username:req.body.username,
+			timestamp:{
+				$lte:newStamp
+			}
+		}
+	}
+	else{
+		query ={
+			$text:{
+				$search:q
+			},
+			timestamp:{
+				$lte:newStamp
+			}
+		}
+	}	
+}
+else{
+	if(req.body.username != null){
+		query = {
+			username:req.body.username,
+			timestamp:{
+				$lte:newStamp
+			}
+		}
+	}
+	else{
+		query ={
+			timestamp:{
+				$lte:newStamp
+			}
+		}
+	}	
+}
+
+
+
+
 
 	mongoClient.connect(url,function(err,db){
 		assert.equal(null,err);
 		
 	if (req.body.limit != null && req.body.limit != ""){
-
-		db.collection('tweets').find(query).sort({score:{$meta:"textScore"}}).limit(Number(req.body.limit)).toArray(function(err,doc){
-			if (doc != null){
-				var list = [];
-				for (var i = 0; i<=doc.length; i++){
-					if (i == doc.length){
-						var response = {
-							status: "OK",
-							items: list,
-						}
-						res.send(response)
-						db.close()
-					}
-					else{
-						var json = {
-						content: doc[i].content,
-						parent: doc[i].parent,
-						username: doc[i].username,
-						timestamp: doc[i].timestamp,
-						id: doc[i]._id
-						}
-						list.push(json);
-					}
-					
-				}
-			}
-		})
-	}
-	else{
-		db.collection('tweets').find({$text:{$search:q}},{score:{$meta:"textScore"}}).sort({score:{$meta:"textScore"}}).limit(25).toArray(function(err,doc){
-			if(err){
+		db.collection('tweets').find(query).sort({timestamp:-1}).limit(Number(req.body.limit)).toArray(function(err,doc){
+						if(err){
 				console.log(err)
 			}
 			if (doc != null){
@@ -511,7 +471,7 @@ app.post('/search',function(req,res){
 					if (i == doc.length){
 							if (req.body.following == "true"){
 								console.log("FOLLOWING = TRUE")
-								connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.session.user) + ';',function(err,result){
+								connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.body.user) + ';',function(err,result){
 								if(err){
 									console.log(err)
 								}
@@ -525,7 +485,7 @@ app.post('/search',function(req,res){
 										if (k == jsonArrayOfFollowing.length){
 											for(var j = 0; j<=list.length; j++){
 												if(j == list.length){
-													console.log(newList);
+													//console.log(newList);
 													var toReturn = {
 													status:"OK",
 													items: newList
@@ -550,7 +510,81 @@ app.post('/search',function(req,res){
 							})
 						}
 						else{
-							console.log("NOT TRUE!!!!!!!")
+							var response = {
+								status: "OK",
+								items: list
+							}
+							res.send(response);
+						}
+					}
+					else{
+						var json = {
+						content: doc[i].content,
+						parent: doc[i].parent,
+						username: doc[i].username,
+						timestamp: doc[i].timestamp,
+						id: doc[i]._id
+						}
+						list.push(json);
+					}
+					
+				}
+			}
+		})
+	}
+
+
+
+	else{
+		db.collection('tweets').find(query).sort({timestamp:-1}).limit(25).toArray(function(err,doc){
+			if(err){
+				console.log(err)
+			}
+			if (doc != null){
+				var list = [];
+				for (var i = 0; i<=doc.length; i++){
+					if (i == doc.length){
+							if (req.body.following == "true"){
+								console.log("FOLLOWING = TRUE")
+								connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.body.user) + ';',function(err,result){
+								if(err){
+									console.log(err)
+								}
+								else{
+									var newList = [];
+
+									var string = JSON.stringify(result);
+									var jsonArrayOfFollowing = JSON.parse(string);
+									var parsingJsonArray = [];
+									for (var k = 0; k<=jsonArrayOfFollowing.length; k++){
+										if (k == jsonArrayOfFollowing.length){
+											for(var j = 0; j<=list.length; j++){
+												if(j == list.length){
+													//console.log(newList);
+													var toReturn = {
+													status:"OK",
+													items: newList
+													}
+													res.send(toReturn);
+												}
+												else{
+													if(parsingJsonArray.indexOf(list[j].username) >= 0){
+														newList.push(list[j]);
+													}
+													else{
+													}
+												}
+											}
+										}
+										else{
+											parsingJsonArray.push(jsonArrayOfFollowing[k].User2)
+										}
+									}
+
+								}
+							})
+						}
+						else{
 							var response = {
 								status: "OK",
 								items: list
