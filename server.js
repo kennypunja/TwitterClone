@@ -12,8 +12,8 @@ var mongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 const dateTime = Date.now();
 
-//var url = 'mongodb://52.90.176.234:27017/twitter';
-var url = 'mongodb://localhost:27017/twitter';
+var url = 'mongodb://52.90.176.234:27017/twitter';
+//var url = 'mongodb://localhost:27017/twitter';
 
 
 
@@ -23,21 +23,21 @@ mongoClient.connect(url,function(err,db){
 	//db.tweets.createIndex({"content": "text"});
 	})
 
-/*
+
 var connection = mysql.createConnection({
 	host: '52.54.224.209',
 	user: 'root',
 	password: 'cse356',
 	database: 'Twitter'
 });
-*/
 
+/*
 var connection = mysql.createConnection({
 	host: 'localhost',
 	user: 'root',
 	password: 'root',
 	database: 'twitter'
-})
+})*/
 
 connection.connect(function(err){
 	if(err){
@@ -410,10 +410,18 @@ app.post('/search',function(req,res){
 	//console.log("THIS IS LIMIt" + limit)
 
 	var q = req.body.q;
+<<<<<<< HEAD
 	
 	var query;
 if (q != null){
 	if(req.body.username != null){
+=======
+
+	
+	//THIS CODE WORKS BUT IM JUST COMMENTING IT OUT TO ONLY TEST OUT THE SEARCH. BUT ALSO THE IFS ARE WEIRD. NEED BETTER WAY oF HANdLIng
+	if(req.body.timestamp != null){
+		if (req.body.usernameSearch != null){
+>>>>>>> c7be94898738e2bf2bd424dd3844738b161f1a87
 		query = {
 			$text:{
 				$search:q
@@ -450,9 +458,23 @@ else{
 				$lte:newStamp
 			}
 		}
+<<<<<<< HEAD
 	}	
 }
 
+=======
+	}
+}
+
+	/*var query = {
+		$text:{
+			$search: q
+		},
+		$score:{
+			$meta: "textScore"
+		}
+	}*/
+>>>>>>> c7be94898738e2bf2bd424dd3844738b161f1a87
 
 
 
@@ -461,10 +483,15 @@ else{
 		assert.equal(null,err);
 		
 	if (req.body.limit != null && req.body.limit != ""){
+<<<<<<< HEAD
 		db.collection('tweets').find(query).sort({timestamp:-1}).limit(Number(req.body.limit)).toArray(function(err,doc){
 						if(err){
 				console.log(err)
 			}
+=======
+
+		db.collection('tweets').find(query)/*.sort({score:{$meta:"textScore"}})*/.limit(Number(req.body.limit)).toArray(function(err,doc){
+>>>>>>> c7be94898738e2bf2bd424dd3844738b161f1a87
 			if (doc != null){
 				var list = [];
 				for (var i = 0; i<=doc.length; i++){
@@ -536,7 +563,11 @@ else{
 
 
 	else{
+<<<<<<< HEAD
 		db.collection('tweets').find(query).sort({timestamp:-1}).limit(25).toArray(function(err,doc){
+=======
+		db.collection('tweets').find(/*{$text:{$search:q}},{score:{$meta:"textScore"}}*/query)./*sort({score:{$meta:"textScore"}}).*/limit(25).toArray(function(err,doc){
+>>>>>>> c7be94898738e2bf2bd424dd3844738b161f1a87
 			if(err){
 				console.log(err)
 			}
@@ -709,11 +740,11 @@ app.post('/follow',function(req,res){
 		console.log("FOLLOW IS NOT TRUE");
 	}
 })
-/*
+
 app.listen(8080, "172.31.64.118",function(){
 	console.log("Server listening on port " + 9000);
-})*/
-
-app.listen(9000,"0.0.0.0",function(){
-	console.log("server listening on port " + 9000);
 })
+
+/*app.listen(9000,"0.0.0.0",function(){
+	console.log("server listening on port " + 9000);
+})*/
