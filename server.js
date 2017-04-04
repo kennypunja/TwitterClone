@@ -151,18 +151,8 @@ app.post('/login', function(req,res){
 
 app.post('/logout',function(req,res){
 	if(typeof req.session.user != 'undefined'){
-		req.session.destroy(function(err){
-			if(err){
-				res.send({
-					status: "error",
-					error: err
-				});
-			}else{
-				res.send({
-					status: "OK"
-				})
-			}
-		})
+		req.session = null;
+		res.send({status: "OK"});
 	}else{
 		res.send({
 			status: "error",
