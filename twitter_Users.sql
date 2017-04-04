@@ -1,5 +1,5 @@
-CREATE DATABASE  IF NOT EXISTS `twitter` /*!40100 DEFAULT CHARACTER SET latin1 */;
-USE `twitter`;
+CREATE DATABASE  IF NOT EXISTS `Twitter` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `Twitter`;
 -- MySQL dump 10.13  Distrib 5.7.12, for Win64 (x86_64)
 --
 -- Host: localhost    Database: twitter
@@ -32,7 +32,7 @@ CREATE TABLE `Users` (
   `verify` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`username`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=NDBCLUSTER DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -43,5 +43,11 @@ CREATE TABLE `Users` (
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+CREATE TABLE Following(
+User1 varchar(255) DEFAULT NULL,
+User2 varchar(255) DEFAULT NULL,
+FOREIGN Key(User1) REFERENCES Users(username),
+FOREIGN Key(User2) REFERENCES Users(username)
+)ENGINE=NDBCLUSTER DEFAULT CHARSET=latin1;
 
 -- Dump completed on 2017-03-21 10:09:49
