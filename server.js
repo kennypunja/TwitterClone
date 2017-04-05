@@ -476,6 +476,10 @@ console.log(query)
 					if (i == doc.length){
 							if (req.body.following == "true"){
 								console.log("FOLLOWING = TRUE")
+								var x = 0;
+								for(int i =0; i<1000;i++){
+									x++;
+								}
 								connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.body.user) + ';',function(err,result){
 								if(err){
 									console.log(err)
@@ -551,7 +555,7 @@ console.log(query)
 					if (i == doc.length){
 							if (req.body.following == "true"){
 								console.log("FOLLOWING = TRUE")
-								int x = 0;
+								var x = 0;
 								for(int i =0; i<1000;i++){
 									x++;
 								}
