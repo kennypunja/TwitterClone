@@ -341,15 +341,16 @@ mongoClient.connect(url,function(err,db){
 
 
 	db.collection('tweets').findOne(queryJson,function(err,result){
+		console.log("THIS IS RESULT" + result);
+	
 		if (err){
 			res.send({
 				status: "error"
 			})
 			db.close();
 		}
-		//console.log("THIS IS RESULT");
-		//console.log(result);
-		else if(result){
+		
+		if(result){
 			var resultToRespond = {
 			status: "OK",
 			item: {
@@ -363,7 +364,7 @@ mongoClient.connect(url,function(err,db){
 		db.close();
 
 		}
-		else{
+		if(!result){
 			res.send({
 				status: "error"
 			})
