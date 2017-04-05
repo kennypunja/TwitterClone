@@ -642,6 +642,8 @@ app.get('/user/:username',function(req,res){
 	connection.query('SELECT DISTINCT U.email, COUNT(F.User2) AS following FROM Users U, Following FI WHERE U.username = '+
 		mysql.escape(req.params.username)+' AND FI.User1 = '+mysql.escape(req.params.username), function(err,result){
 			if(err){
+				console.log('in first query');
+				console.log(err)
 				res.send({
 					status: "error",
 					error: err
@@ -653,6 +655,8 @@ app.get('/user/:username',function(req,res){
 				connection.query('SELECT DISTINCT COUNT(F.USER1) AS follower FROM Following F WHERE F.User2 = '+
 					mysql.escape(req.params.username), function(err,result){
 						if(err){
+							console.log('in second query');
+							console.log(err)
 							res.send({
 								status: "error",
 								error: err
