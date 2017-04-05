@@ -347,6 +347,8 @@ mongoClient.connect(url,function(err,db){
 		//console.log("THIS IS RESULT");
 		//console.log(result);
 		else{
+			console.log("result: "+result);
+			}
 					var resultToRespond = {
 			status: "OK",
 			item: {
@@ -612,11 +614,11 @@ app.delete('/item/:id',function(req,res){
 	db.collection('tweets').remove({'_id': id},function(err,doc){
 		if (err){
 			//console.log(err)
-			res.send({status: "error"});
+			res.send("Success");
 		}
 		else{
 			//console.log("TWEET DELETED");
-			res.send({status: "OK"})
+			res.send("failure")
 		}
 	})
 })
