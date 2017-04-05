@@ -474,7 +474,7 @@ else{
 				var list = [];
 				for (var i = 0; i<=doc.length; i++){
 					if (i == doc.length){
-							if (req.body.following == "true"){
+							if (req.body.following == true){
 								console.log("FOLLOWING = TRUE")
 								connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.body.user) + ';',function(err,result){
 								if(err){
@@ -552,7 +552,7 @@ else{
 				var list = [];
 				for (var i = 0; i<=doc.length; i++){
 					if (i == doc.length){
-							if (req.body.following == "true"){
+							if (req.body.following == true){
 								console.log("FOLLOWING = TRUE")
 
 								connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.body.user) + ';',function(err,result){
