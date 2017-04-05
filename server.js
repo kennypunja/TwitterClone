@@ -348,8 +348,14 @@ mongoClient.connect(url,function(err,db){
 		//console.log(result);
 		else{
 			console.log("result: "+result);
+			if(result = null){
+				res.send({
+				status: "error"
+			})
+			db.close();
 			}
-					var resultToRespond = {
+			else{
+							var resultToRespond = {
 			status: "OK",
 			item: {
 				id: result._id,
@@ -360,6 +366,8 @@ mongoClient.connect(url,function(err,db){
 		}
 		res.send(resultToRespond);
 		db.close();
+			}
+
 		}
 
 	})
