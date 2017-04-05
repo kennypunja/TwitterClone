@@ -759,7 +759,17 @@ app.post('/follow',function(req,res){
 	})
 	}
 	else{
-		console.log("FOLLOW IS NOT TRUE");
+		//console.log("FOLLOW IS NOT TRUE");
+		connection.query('DELETE FROM Following WHERE User1 = '+req.session.user+' AND User2 = '+ mysql.escape(req.body.username), function(err,result){
+			if(err){
+				res.send({
+				status: "error",
+				error: err
+			});
+			}else{
+				res.send({status: "OK"});
+			}
+		})
 	}
 })
 
