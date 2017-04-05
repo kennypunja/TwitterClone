@@ -70,7 +70,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: true
 }));
-//app.use(require('morgan')('dev'));
+app.use(require('morgan')('dev'));
 
 app.get('/', function(req,res){
 	if(typeof req.session.user === 'undefined'){
@@ -601,17 +601,17 @@ else{
 })
 
 app.delete('/item/:id',function(req,res){
-	console.log(req.params.id);
+	//console.log(req.params.id);
 	var id = require('mongodb').ObjectId(req.params.id);
 	mongoClient.connect(url,function(err,db){
 	assert.equal(null,err);
 	db.collection('tweets').remove({'_id': id},function(err,doc){
 		if (err){
-			console.log(err)
+			//console.log(err)
 			res.send({status: "error"});
 		}
 		else{
-			console.log("TWEET DELETED");
+			//console.log("TWEET DELETED");
 			res.send({status: "OK"})
 		}
 	})
