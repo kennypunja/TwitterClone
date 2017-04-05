@@ -25,7 +25,7 @@ mongoClient.connect(url,function(err,db){
 
 
 var connection = mysql.createConnection({
-	host: '52.54.224.209',
+	host: '34.207.92.80',
 	user: 'root',
 	password: 'cse356',
 	database: 'Twitter'
@@ -70,7 +70,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: true
 }));
-app.use(require('morgan')('dev'));
+//app.use(require('morgan')('dev'));
 
 app.get('/', function(req,res){
 	if(typeof req.session.user === 'undefined'){
@@ -476,15 +476,14 @@ console.log(query)
 					if (i == doc.length){
 							if (req.body.following == "true"){
 								console.log("FOLLOWING = TRUE")
-								var x = 0;
-								for(var i =0; i<1000;i++){
-									x++;
-								}
 								connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.body.user) + ';',function(err,result){
 								if(err){
 									console.log(err)
 								}
 								else{
+									for(x in result){
+										console.log(result[x])
+									}
 									var newList = [];
 
 									var string = JSON.stringify(result);
@@ -555,15 +554,15 @@ console.log(query)
 					if (i == doc.length){
 							if (req.body.following == "true"){
 								console.log("FOLLOWING = TRUE")
-								var x = 0;
-								for(var i =0; i<1000;i++){
-									x++;
-								}
+
 								connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.body.user) + ';',function(err,result){
 								if(err){
 									console.log(err)
 								}
 								else{
+									for(x in result){
+										console.log(result[x])
+									}
 									var newList = [];
 
 									var string = JSON.stringify(result);
