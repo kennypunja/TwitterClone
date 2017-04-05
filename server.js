@@ -70,7 +70,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: true
 }));
-//app.use(require('morgan')('dev'));
+app.use(require('morgan')('dev'));
 
 app.get('/', function(req,res){
 	if(typeof req.session.user === 'undefined'){
@@ -475,15 +475,12 @@ else{
 				for (var i = 0; i<=doc.length; i++){
 					if (i == doc.length){
 							if (req.body.following == true){
-								console.log("FOLLOWING = TRUE")
 								connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.body.user) + ';',function(err,result){
 								if(err){
 									console.log(err)
 								}
 								else{
-									for(x in result){
-										console.log(result[x])
-									}
+									
 									var newList = [];
 
 									var string = JSON.stringify(result);
@@ -553,16 +550,13 @@ else{
 				for (var i = 0; i<=doc.length; i++){
 					if (i == doc.length){
 							if (req.body.following == true){
-								console.log("FOLLOWING = TRUE")
 
 								connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.body.user) + ';',function(err,result){
 								if(err){
 									console.log(err)
 								}
 								else{
-									for(x in result){
-										console.log(result[x])
-									}
+									
 									var newList = [];
 
 									var string = JSON.stringify(result);
