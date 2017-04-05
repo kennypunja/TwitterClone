@@ -477,7 +477,7 @@ console.log(query)
 							if (req.body.following == "true"){
 								console.log("FOLLOWING = TRUE")
 								var x = 0;
-								for(int i =0; i<1000;i++){
+								for(var i =0; i<1000;i++){
 									x++;
 								}
 								connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.body.user) + ';',function(err,result){
@@ -556,7 +556,7 @@ console.log(query)
 							if (req.body.following == "true"){
 								console.log("FOLLOWING = TRUE")
 								var x = 0;
-								for(int i =0; i<1000;i++){
+								for(var i =0; i<1000;i++){
 									x++;
 								}
 								connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.body.user) + ';',function(err,result){
