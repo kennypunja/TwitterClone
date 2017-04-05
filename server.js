@@ -650,6 +650,7 @@ app.get('/user/:username',function(req,res){
 				})
 			}
 			else{
+				console.log(result);
 				email = result.email;
 				following = result.following;
 				connection.query('SELECT DISTINCT COUNT(F.USER1) AS follower FROM Following F WHERE F.User2 = '+
@@ -669,6 +670,7 @@ app.get('/user/:username',function(req,res){
 								followers : follower,
 								following : following
 							}
+							console.log(response);
 							res.send({
 								status: "OK",
 								user: response
