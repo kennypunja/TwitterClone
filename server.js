@@ -25,7 +25,7 @@ mongoClient.connect(url,function(err,db){
 
 
 var connection = mysql.createConnection({
-	host: '34.207.92.80',
+	host: '52.54.224.209',
 	user: 'root',
 	password: 'cse356',
 	database: 'Twitter'
