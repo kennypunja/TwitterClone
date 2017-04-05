@@ -313,12 +313,20 @@ app.post('/additem', function(req,res){
 	}
 	db.collection('tweets').insertOne(newDoc,function(err,result){
 		assert.equal(null,err);
-		db.close();
 		var resultToSend = {
 			status: "OK",
 			id: newDoc._id,
 		}
-		res.send(resultToSend);
+		console.log(resultToSend.id);
+		var tempString = resultToSend.id;
+		console.log(tempString);
+		db.collection('tweets').update({"_id": newDoc._id},{$set:{"id" : tempString}},function(err,result2){
+			assert.equal(null,err);
+			console.log("UPDATED");
+			console.log(result2);
+			res.send(resultToSend);
+
+		})
 	})
 })
 	}
@@ -467,155 +475,114 @@ else{
 		
 	if (req.body.limit != null && req.body.limit != ""){
 		db.collection('tweets').find(query).sort({timestamp:-1}).limit(Number(req.body.limit)).toArray(function(err,doc){
-						if(err){
+			if(err){
 				console.log(err)
 			}
-			if (doc != null){
-				var list = [];
-				for (var i = 0; i<=doc.length; i++){
-					if (i == doc.length){
-							if (req.body.following == true){
-								connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.body.user) + ';',function(err,result){
-								if(err){
-									console.log(err)
-								}
-								else{
-									
-									var newList = [];
-
-									var string = JSON.stringify(result);
-									var jsonArrayOfFollowing = JSON.parse(string);
-									var parsingJsonArray = [];
-									for (var k = 0; k<=jsonArrayOfFollowing.length; k++){
-										if (k == jsonArrayOfFollowing.length){
-											for(var j = 0; j<=list.length; j++){
-												if(j == list.length){
-													//console.log(newList);
-													var toReturn = {
+			else{
+				if (doc != null){
+					console.log(doc);
+					if(req.body.following == true){
+						connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.body.user) + ';',function(err,result){
+							if(err){
+								console.log(err)
+							}
+							else{
+								var newList = [];
+								var string = JSON.stringify(result);
+								var jsonArrayOfFollowing = JSON.parse(string);
+								var parsingJsonArray = [];
+								for (var k = 0; k<= jsonArrayOfFollowing.length;k++){
+									if (k==jsonArrayOfFollowing.length){
+										for(var j = 0; j<=list.length; j++){
+											if(j==list.length){
+												var toReturn = {
 													status:"OK",
 													items: newList
-													}
-													res.send(toReturn);
 												}
-												else{
-													if(parsingJsonArray.indexOf(list[j].username) >= 0){
-														newList.push(list[j]);
-													}
-													else{
-													}
+												res.send(toReturn);
+											}
+											else{
+												if(parsingJsonArray.indexOf(list[j].username)>= 0){
+													newList.push(list[j])
 												}
 											}
 										}
-										else{
-											parsingJsonArray.push(jsonArrayOfFollowing[k].User2)
-										}
 									}
-
+									else{
+										parsingJsonArray.push(jsonArrayOfFollowing[k].User2)
+									}
 								}
-							})
-						}
-						else{
-							var response = {
-								status: "OK",
-								items: list
 							}
-							res.send(response);
-						}
+						})
 					}
 					else{
-						var json = {
-						content: doc[i].content,
-						parent: doc[i].parent,
-						username: doc[i].username,
-						timestamp: doc[i].timestamp,
-						id: doc[i]._id
+						var response = {
+							status:"OK",
+							items: doc
 						}
-						list.push(json);
-					}
-					
+						res.send(response)
+					}				
 				}
 			}
 		})
 	}
-
-
 
 	else{
 		db.collection('tweets').find(query).sort({timestamp:-1}).limit(25).toArray(function(err,doc){
 			if(err){
 				console.log(err)
 			}
-			if (doc != null){
-				var list = [];
-				for (var i = 0; i<=doc.length; i++){
-					if (i == doc.length){
-							if (req.body.following == true){
-
-								connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.body.user) + ';',function(err,result){
-								if(err){
-									console.log(err)
-								}
-								else{
-									
-									var newList = [];
-
-									var string = JSON.stringify(result);
-									var jsonArrayOfFollowing = JSON.parse(string);
-									var parsingJsonArray = [];
-									for (var k = 0; k<=jsonArrayOfFollowing.length; k++){
-										if (k == jsonArrayOfFollowing.length){
-											for(var j = 0; j<=list.length; j++){
-												if(j == list.length){
-													//console.log(newList);
-													var toReturn = {
+			else{
+				if (doc != null){
+					console.log(doc);
+					if(req.body.following == true){
+						connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.body.user) + ';',function(err,result){
+							if(err){
+								console.log(err)
+							}
+							else{
+								var newList = [];
+								var string = JSON.stringify(result);
+								var jsonArrayOfFollowing = JSON.parse(string);
+								var parsingJsonArray = [];
+								for (var k = 0; k<= jsonArrayOfFollowing.length;k++){
+									if (k==jsonArrayOfFollowing.length){
+										for(var j = 0; j<=list.length; j++){
+											if(j==list.length){
+												var toReturn = {
 													status:"OK",
 													items: newList
-													}
-													res.send(toReturn);
 												}
-												else{
-													if(parsingJsonArray.indexOf(list[j].username) >= 0){
-														newList.push(list[j]);
-													}
-													else{
-													}
+												res.send(toReturn);
+											}
+											else{
+												if(parsingJsonArray.indexOf(list[j].username)>= 0){
+													newList.push(list[j])
 												}
 											}
 										}
-										else{
-											parsingJsonArray.push(jsonArrayOfFollowing[k].User2)
-										}
 									}
-
+									else{
+										parsingJsonArray.push(jsonArrayOfFollowing[k].User2)
+									}
 								}
-							})
-						}
-						else{
-							var response = {
-								status: "OK",
-								items: list
 							}
-							res.send(response);
-						}
+						})
 					}
 					else{
-						var json = {
-						content: doc[i].content,
-						parent: doc[i].parent,
-						username: doc[i].username,
-						timestamp: doc[i].timestamp,
-						id: doc[i]._id
+						var response = {
+							status:"OK",
+							items: doc
 						}
-						list.push(json);
-					}
-					
+						res.send(response)
+					}				
 				}
 			}
 		})
 	}
-	})
-})
 
+})
+})
 app.delete('/item/:id',function(req,res){
 	//console.log(req.params.id);
 	var id = require('mongodb').ObjectId(req.params.id);
@@ -778,7 +745,8 @@ app.post('/follow',function(req,res){
 app.listen(8080, "172.31.64.118",function(){
 	console.log("Server listening on port " + 9000);
 })
-
-/*app.listen(9000,"0.0.0.0",function(){
-	console.log("server listening on port " + 9000);
-})*/
+/*
+app.listen(8080,"0.0.0.0",function(){
+	console.log("server listening on port " + 8080);
+})
+*/
