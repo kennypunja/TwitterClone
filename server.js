@@ -639,32 +639,30 @@ app.delete('/item/:id',function(req,res){
 
 app.get('/user/:username',function(req,res){
 	var email, follower, following;
-	connection.query('SELECT DISTINCT U.email, COUNT(F.User2) AS following FROM Users U, Following F WHERE U.username = '+
-		mysql.escape(req.params.username)+' AND F.User1 = '+mysql.escape(req.params.username), function(err,result){
-			if(err){
-				console.log('in first query');
-				console.log(err)
-				res.send({
+	connection.query('SELECT email FROM Users WHERE username = '+mysql.escape(req.params.username), function(err,result){
+		if(err){
+			res.send({
+					status: "error",
+					error: err
+			})
+		}else{
+			email = result[0].email;
+			connection.query('SELECT COUNT(User2) AS Following FROM Following WHERE User1 = '+ mysql.escape(req.params.username), function(err, result){
+				if(err){
+					res.send({
 					status: "error",
 					error: err
 				})
-			}
-			else{
-				console.log(result);
-				email = result.email;
-				following = result.following;
-				connection.query('SELECT DISTINCT COUNT(F.USER1) AS follower FROM Following F WHERE F.User2 = '+
-					mysql.escape(req.params.username), function(err,result){
+				}else{
+					following = result[0].Following;
+					connection.query('SELECT COUNT(User1) AS Follower FROM Following WHERE User2 = '+ mysql.escape(req.params.username), function(err, result){
 						if(err){
-							console.log('in second query');
-							console.log(err)
 							res.send({
-								status: "error",
-								error: err
-							})
-						}
-						else{
-							follower = result.follower;
+					status: "error",
+					error: err
+				})
+						}else{
+							follower = result[0].Follower;
 							var response = {
 								email : email,
 								followers : follower,
@@ -672,13 +670,15 @@ app.get('/user/:username',function(req,res){
 							}
 							console.log(response);
 							res.send({
-								status: "OK",
+								status : "OK",
 								user: response
 							})
 						}
 					})
-			}
-		})
+				}
+			})
+		}
+	})
 })
 
 app.get('/user/:username/followers',function(req,res){
