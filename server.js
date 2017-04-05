@@ -608,14 +608,52 @@ app.delete('/item/:id',function(req,res){
 	db.collection('tweets').remove({'_id': id},function(err,doc){
 		if (err){
 			console.log(err)
-			res.send("Failure");
+			res.send({status: "error"});
 		}
 		else{
 			console.log("TWEET DELETED");
-			res.send("Success")
+			res.send({status: "OK"})
 		}
 	})
 })
+})
+
+app.get('/user/:username',function(req,res){
+	var email, follower, following;
+	connection.query('SELECT DISTINCT U.email, COUNT(F.User2) AS following FROM Users U, Following FI WHERE U.username = '+
+		mysql.escape(req.params.username)+' AND FI.User1 = '+mysql.escape(req.params.username), function(err,result){
+			if(err){
+				res.send({
+					status: "error",
+					error: err
+				})
+			}
+			else{
+				email = result.email;
+				following = result.following;
+				connection.query('SELECT DISTINCT COUNT(F.USER1) AS follower FROM Following F WHERE F.User2 = '+
+					mysql.escape(req.params.username), function(err,result){
+						if(err){
+							res.send({
+								status: "error",
+								error: err
+							})
+						}
+						else{
+							follower = result.follower;
+							var response = {
+								email : email,
+								followers : follower,
+								following : following
+							}
+							res.send({
+								status: "OK",
+								user: response
+							})
+						}
+					})
+			}
+		})
 })
 
 app.get('/user/:username/followers',function(req,res){
