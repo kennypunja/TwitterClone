@@ -744,7 +744,7 @@ app.get('/user/:username/following',function(req,res){
 app.post('/follow',function(req,res){
 	console.log(req.body);
 	if(req.body.follow == true){
-		console.log("TRUE???")
+		//console.log("TRUE???")
 		connection.query('INSERT INTO Following VALUES('+ mysql.escape(req.session.user) + ',' + mysql.escape(req.body.username) + ')', function(err,result){
 		if(err){
 			console.log(err);
@@ -767,6 +767,7 @@ app.post('/follow',function(req,res){
 				error: err
 			});
 			}else{
+				console.log(req.session.user +'has unfollow '+req.body.username);
 				res.send({status: "OK"});
 			}
 		})
