@@ -349,8 +349,8 @@ mongoClient.connect(url,function(err,db){
 		}
 		//console.log("THIS IS RESULT");
 		//console.log(result);
-		if(result){
-		var resultToRespond = {
+		else if(result){
+			var resultToRespond = {
 			status: "OK",
 			item: {
 				id: result._id,
@@ -361,15 +361,13 @@ mongoClient.connect(url,function(err,db){
 		}
 		res.send(resultToRespond);
 		db.close();
-			}
-			else{
-				res.send({
-				status: "error",
-				error: "item not exist"
+
+		}
+		else{
+			res.send({
+				status: "error"
 			})
 			db.close();
-			}
-
 		}
 
 	})
