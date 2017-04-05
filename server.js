@@ -459,7 +459,7 @@ else{
 }
 
 
-console.log(query)
+//console.log(query)
 
 
 	mongoClient.connect(url,function(err,db){
@@ -675,7 +675,7 @@ app.get('/user/:username',function(req,res){
 								followers : follower,
 								following : following
 							}
-							console.log(response);
+							//console.log(response);
 							res.send({
 								status : "OK",
 								user: response
@@ -689,14 +689,14 @@ app.get('/user/:username',function(req,res){
 })
 
 app.get('/user/:username/followers',function(req,res){
-	console.log(req.params.username)
+	//console.log(req.params.username)
 	if(req.body.limit != null && req.body.limit != ""){
 		connection.query('SELECT User1 From Following where User2 =' + mysql.escape(req.params.username) + ' LIMIT ' + mysql.escape(req.body.limit) + ';',function(err,result){
 			if(err){
 				console.log(err);
 			}
 			else{
-				console.log(result)
+				//console.log(result)
 				res.send({status:"OK"});
 			}
 		})
@@ -718,14 +718,14 @@ app.get('/user/:username/followers',function(req,res){
 })
 
 app.get('/user/:username/following',function(req,res){
-	console.log(req.params.username)
+	//console.log(req.params.username)
 	if(req.body.limit != null && req.body.limit != ""){
 		connection.query('SELECT User2 From Following where User1 =' + req.params.username + ' LIMIT ' + req.body.limit + ';',function(err,result){
 			if(err){
 				console.log(err);
 			}
 			else{
-				console.log(result)
+				//console.log(result)
 				res.send({status:"OK"});
 			}
 		})
@@ -749,7 +749,7 @@ app.get('/user/:username/following',function(req,res){
 
 
 app.post('/follow',function(req,res){
-	console.log(req.body);
+	//console.log(req.body);
 	if(req.body.follow == true){
 		//console.log("TRUE???")
 		connection.query('INSERT INTO Following VALUES('+ mysql.escape(req.session.user) + ',' + mysql.escape(req.body.username) + ')', function(err,result){
