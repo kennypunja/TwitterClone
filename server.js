@@ -625,11 +625,11 @@ app.delete('/item/:id',function(req,res){
 	db.collection('tweets').remove({'_id': id},function(err,doc){
 		if (err){
 			//console.log(err)
-			res.send("Success");
+			res.send("failure");
 		}
 		else{
 			//console.log("TWEET DELETED");
-			res.send("failure")
+			res.send("Success")
 		}
 	})
 })
