@@ -326,22 +326,22 @@ app.post('/additem', function(req,res){
 })
 
 app.get('/item/:id',function(req,res){
-	console.log("in get item");
+	//console.log("in get item");
 mongoClient.connect(url,function(err,db){
 	assert.equal(null,err);
 	//console.log(req.query.id)
 	//console.log("THIS IS ID");
 	//console.log(req.params.id)
 	var id = require('mongodb').ObjectId(req.params.id);
-	console.log("in get item");
-	console.log(id);
+	//console.log("in get item");
+	//console.log(id);
 	var queryJson = {
 		_id: id
 	}
 
 
 	db.collection('tweets').findOne(queryJson,function(err,result){
-		console.log("THIS IS RESULT" + result);
+		//console.log("THIS IS RESULT" + result);
 	
 		if (err){
 			res.send({
@@ -409,8 +409,8 @@ app.post('/searchTweets',function(req,res){
 
 app.post('/search',function(req,res){
 	var newStamp = req.body.timestamp || dateTime;
-	console.log("THIS IS NEW STAMP"  + newStamp)
-	console.log(req.body);
+	//console.log("THIS IS NEW STAMP"  + newStamp)
+	//console.log(req.body);
 	//var limit = Number(req.body.limit) || 25;
 	//console.log("THIS IS LIMIt" + limit)
 
@@ -459,7 +459,7 @@ else{
 }
 
 
-
+console.log(query)
 
 
 	mongoClient.connect(url,function(err,db){
