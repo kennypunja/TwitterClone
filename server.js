@@ -7,25 +7,32 @@ var session = require('cookie-session');
 var mysql = require('mysql');
 var crypto = require('crypto');
 var nodemailer = require('nodemailer');
-//var FileStore = require('session-file-store')(session);
 var mongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
+var cryptoRandomString = require('crypto-random-string');
+
 const dateTime = Date.now();
 
-var url = 'mongodb://52.90.176.234:27017/twitter';
-//var url = 'mongodb://localhost:27017/twitter';
+//var url = 'mongodb://52.90.176.234:27017/twitter';
+var url = 'mongodb://localhost:27017/twitter';
 
 
 
-mongoClient.connect(url,function(err,db){
-	assert.equal(null,err);
-	console.log("CONNECTION SUCCESS");
-	//db.tweets.createIndex({"content": "text"});
-	})
-
-
+/*
+mongoClient.open(function(err,mongoClient){
+	var twitterDb = mongoClient.db("twitter");
+})
+*/
+/*
 var connection = mysql.createConnection({
 	host: '34.207.92.80',
+	user: 'root',
+	password: 'cse356',
+	database: 'Twitter'
+});*/
+
+var connection = mysql.createConnection({
+	host: '52.14.213.18',
 	user: 'root',
 	password: 'cse356',
 	database: 'Twitter'
@@ -38,6 +45,7 @@ var connection = mysql.createConnection({
 	password: 'root',
 	database: 'twitter'
 })*/
+
 
 connection.connect(function(err){
 	if(err){
@@ -72,6 +80,21 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(require('morgan')('dev'));
 
+
+var db;
+
+mongoClient.connect(url,function(err,database){
+	assert.equal(null,err);
+	console.log("CONNECTION SUCCESS TO MONGO");
+	db = database;
+	app.listen(8080,"0.0.0.0",function(){
+	console.log("server listening on port " + 8080);
+		})
+	//db.tweets.createIndex({"content": "text"});
+})
+
+
+
 app.get('/', function(req,res){
 	if(typeof req.session.user === 'undefined'){
 		res.redirect('/login');
@@ -82,6 +105,11 @@ app.get('/', function(req,res){
 	}
 })
 
+app.get('/profile',function(req,res){
+	res.sendFile('profile.html',{root: __dirname+'/public'});
+
+})
+
 app.use('/',express.static(__dirname + '/public',{
 
 }));
@@ -89,8 +117,11 @@ app.use('/',express.static(__dirname + '/public',{
 app.get('/adduser', function(req,res){
 	res.sendFile('signUp.html',{root: __dirname+'/public'});
 })
+
+
 app.post('/adduser', function(req,res){
 	var hash = crypto.createHash('md5').update(req.body.email).digest('hex');
+
 	var post = {
 		username : req.body.username,
 		password : req.body.password,
@@ -98,16 +129,17 @@ app.post('/adduser', function(req,res){
 		enabled : false,
 		verify: hash
 	};
-	connection.query('INSERT INTO Users SET ?', post, function(err,result){
-		if(err){
-			res.send({
+	db.collection('users').insertOne(post,function(err,result){
+		if (err){
+			var resToSend = {
 				status: "error",
 				error: err
-			});
+			}
 		}
-		else{
-			res.send({status: "OK"});
+		var resultToSend = {
+			status: "OK"
 		}
+		res.send(resultToSend)
 	})
 		
 })
@@ -116,37 +148,41 @@ app.get('/login', function(req,res){
 	res.sendFile('login.html',{root: __dirname+'/public'});
 })
 app.post('/login', function(req,res){
-	connection.query('SELECT * FROM Users WHERE Username = '+mysql.escape(req.body.username)
-		+' AND password = '+mysql.escape(req.body.password), function(err, result){
-			if(err){
+
+	var query = {
+		username: req.body.username,
+		password: req.body.password
+	}
+
+	db.collection('users').findOne(query,function(err,result){
+		if (err){
+			res.send({
+				status:"error",
+				error: err
+			})
+		}
+		else{
+			console.log(result);
+			if (result == null){
 				res.send({
 					status: "error",
-					error: err
-				});
-			}else{
-				if(result.length===1){
-					if(result[0].enabled === 0){
-						res.send({
-							status: "error",
-							error: "Unactivated account!"
-						})
-					}else{
-						req.session.user = req.body.username;
-						
-						res.send({
-							status: "OK"
-						})
-					}
-					
-				}
-				else{
-					res.send({
-							status: "error",
-							error: "Can not find account!"
-						})
-				}
+					error: "Can not find account!"
+				})
 			}
-		})
+			if(result.enabled === 0){
+				res.send({
+					status:"error",
+					error:"Unactivated account!"
+				})
+			}else{
+				req.session.user = result.username;
+				res.send({
+					status:"OK"
+				})
+			}
+		}
+	})
+
 })
 
 app.post('/logout',function(req,res){
@@ -162,70 +198,76 @@ app.post('/logout',function(req,res){
 })
 
 app.get('/verify',function(req,res){
+
 	if(req.query.key === 'abracadabra'){
-		var query = connection.query('SELECT username FROM Users WHERE email = '+mysql.escape(req.query.email),function(err,result){
+		var query = {
+			email: req.body.email
+		}
+		db.collection('users').findOne(query,function(err,result){
 			if(err){
 				res.send({
-					status: "error",
-					error: err
-				});
+					status:"error",
+					error:err
+				})
 			}
 			else{
-				if(result.length === 1){
-					var query = connection.query('UPDATE Users SET enabled = true WHERE username = '+mysql.escape(result[0].username),function(err,result){
-						if(err){
-							res.send({
-								status: "error",
-								error: err
-							});
-						}else{
-							res.send({
-								status: "OK"
-							});
-						}
-					})
+
+				db.collection('users').update({"username": result.username},{$set:{'enabled':true}},function(err,result2){
+					if(err){
+						res.send({
+							status:"error",
+							error: err
+						})
+					}
+					else{
+						res.send({
+							status: "OK"
+						})
+					}
 				}
 				else{
-					res.send({
-						status: "error",
-						error: "Fail finding user!"
-					})
-				}
-			}
-		})
-	}else{
-		var query = connection.query('SELECT username FROM Users WHERE email = '+mysql.escape(req.query.email)
-			+' AND verify = '+mysql.escape(req.query.key), function(err,result){
-			if(err){
-				res.send({
 					status: "error",
-					error: err
-				});
-			}
-			else{
-				if(result.length ===1){
-					var query = connection.query('UPDATE Users SET enabled = true WHERE username = '+mysql.escape(result[0].username), function(err,result){
-						if(err){
-							res.send({
-								status: "error",
-								error: err
-							});
-						}else{
-							res.send({
-								status: "OK"
-							});
-						}
-					})
-				}else{
-					res.send({
-						status: "error",
-						error: "Fail finding user!"
-					});
+					error: "Fail finding user!"
 				}
 			}
 		})
 	}
-})
+	else{
+		var query = {
+			email: req.body.email,
+			verify: req.body.key
+		}
+		db.collection('users').findOne(query,function(err,result){
+			if(err){
+				res.send({
+					status:"error",
+					error:err
+				})
+			}
+			else{
+				if(result){
+					db.collection('users').update({"username": result.username},{$set:{'enabled':true}},function(err,result2){
+						if(err){
+							res.send({
+								status:"error",
+								error:err
+							})
+						}
+						else{
+							res.send({status:"OK"});
+						}
+
+					})
+				}
+				else{
+					res.send({
+						status:"error",
+						error:"Fail finding user!"
+					})
+				}
+			}
+		})
+	}
 app.post('/verify',function(req,res){
 	if(req.body.key === 'abracadabra'){
 		var query = connection.query('SELECT username FROM Users WHERE email = '+mysql.escape(req.body.email),function(err,result){
@@ -245,7 +287,8 @@ app.post('/verify',function(req,res){
 							});
 						}else{
 							res.send({
-								status: "OK"
+								status: "OK",
+
 							});
 						}
 					})
@@ -294,105 +337,69 @@ app.post('/verify',function(req,res){
 })
 
 app.post('/additem', function(req,res){
-	if(typeof req.session.user == 'undefined'){
+	
+	/*if(typeof req.session.user == 'undefined'){
 		res.send({
 			status: "error",
 			error: "You are not logged in as any user!"
 		})
 	}
-	else{
-		mongoClient.connect(url,function(err,db){
-	assert.equal(null,err);
-	//console.log(req.body);
+	*/
+
+	var postid = crypto.createHash('md5').update(req.body.content+cryptoRandomString(10)).digest('hex');
+
 	var timestamp = Math.floor(dateTime/1000);
 	var newDoc = {
 		content: req.body.content,
 		parent: req.body.parent,
-		username: req.session.user,
-		timestamp: timestamp
+		username: null,
+		timestamp: timestamp,
+		LikeCounter : 0,
+		RTCounter : 0,
+		parent : req.body.id,
+		id: postid
 	}
 	db.collection('tweets').insertOne(newDoc,function(err,result){
 		assert.equal(null,err);
 		var resultToSend = {
 			status: "OK",
-			id: newDoc._id,
+			id: postid
 		}
-		console.log(resultToSend.id);
-		var tempString = resultToSend.id;
-		console.log(tempString);
-		db.collection('tweets').update({"_id": newDoc._id},{$set:{"id" : tempString}},function(err,result2){
-			assert.equal(null,err);
-			console.log("UPDATED");
-			console.log(result2);
-			res.send(resultToSend);
+		res.send(resultToSend)
 
-		})
 	})
-})
-	}
-
+	
 })
 
 app.get('/item/:id',function(req,res){
-	//console.log("in get item");
-mongoClient.connect(url,function(err,db){
-	assert.equal(null,err);
-	//console.log(req.query.id)
-	//console.log("THIS IS ID");
-	//console.log(req.params.id)
-	var id = require('mongodb').ObjectId(req.params.id);
-	//console.log("in get item");
-	//console.log(id);
 	var queryJson = {
-		_id: id
+		id: req.params.id
 	}
-
-
-	db.collection('tweets').findOne(queryJson,function(err,result){
-		//console.log("THIS IS RESULT" + result);
-	
+	db.collection('tweets').findOne(queryJson,function(err,result){	
 		if (err){
 			res.send({
 				status: "error"
 			})
-			db.close();
 		}
-		
 		if(result){
 			var resultToRespond = {
 			status: "OK",
 			item: {
-				id: result._id,
+				id: result.id,
 				username: result.username,
 				content: result.content,
 				timestamp: result.timestamp
 			}
 		}
 		res.send(resultToRespond);
-		db.close();
-
 		}
 		if(!result){
 			res.send({
 				status: "error"
 			})
-			db.close();
 		}
-
 	})
-})
-})
-
-app.get('/getAllTweets',function(req,res){
-	mongoClient.connect(url,function(err,db){
-		assert.equal(null,err);
-
-		db.collection('tweets').find().toArray(function(err,doc){
-			res.send(doc);
-			db.close();
-		})
-	})
-})
+}) 	
 
 app.post('/searchTweets',function(req,res){
 	var newStamp = Number(req.body.timestamp);
@@ -417,13 +424,16 @@ app.post('/searchTweets',function(req,res){
 
 app.post('/search',function(req,res){
 	var newStamp = req.body.timestamp || dateTime;
-	//console.log("THIS IS NEW STAMP"  + newStamp)
-	//console.log(req.body);
-	//var limit = Number(req.body.limit) || 25;
-	//console.log("THIS IS LIMIt" + limit)
-
 	var q = req.body.q;
-	
+	var following = req.body.following;
+	var username = req.body.username;
+	var parent
+	if(req.body.hasOwnProperty('parent')){
+		 parent= req.body.parent;
+	}else{
+		parent = null;
+	}
+
 	var query;
 if (q != null){
 	if(req.body.username != null){
@@ -464,16 +474,402 @@ else{
 			}
 		}
 	}	
-}
+}		
+/* =-=-=-==--=-=-=-=-======================================================= */
+
+	if (q != null && following == true && username == null && parent == null && (replies == false || replies == null)){
+		query ={
+			$text:{
+				$search:q
+			},
+			timestamp:{
+				$lte:newStamp
+			}
+		}
+	}
+	if (q != null && following == true && username == null && parent == null && replies == true){
+		// db.tweets.find({$text:{$search:"wutsup"},parent:{$ne:null}});
+		//of all users that we are following as well
+		query ={
+			$text:{
+				$search:q
+			},
+			timestamp:{
+				$lte:newStamp
+			},
+			parent:{$ne:null}
+		}
+	}
+	if (q != null && following == true && username == null && parent != null){
+
+		//select only from following need to add
+		query = {
+			$text:{
+				$search:q
+			},
+			timestamp:{
+				$lte:newStamp
+			},
+			parent:parent
+		}
+	}
+	if(q != null && following ==false && username != null && parent == null && (replies == false || replies == null)){
+		query = {
+			$text:{
+				$search:q
+			},
+			timestamp:{
+				$lte:newStamp
+			},
+			username:username
+		}
+	}
+
+	if (q != null && following == false && username != null && parent == null && replies == true){
+		// db.tweets.find({$text:{$search:"wutsup"},parent:{$ne:null}});
+
+		query = {
+			$text:{
+				$search:q
+			},
+			timestamp:{
+				$lte:newStamp
+			},
+			username:username,
+			parent:{$ne:null}
+		}
+	}
+	if(q != null && following == false && username != null && parent != null){
+		query = {
+			$text:{
+				$search:q
+			},
+			timestamp:{
+				$lte:newStamp
+			},
+			username:username,
+			parent:parent
+		}
+	}
+	if(q != null && following ==false && username == null && parent == null && (replies == false || replies == null)){
+		query = {
+			$text:{
+				$search:q
+			},
+			timestamp:{
+				$lte:newStamp
+			}
+		}
+	}
+	if(q != null && following == false && username == null && parent == null && replies == true){
+		query = {
+			$text:{
+				$search:q
+			},
+			timestamp:{
+				$lte:newStamp
+			},
+			parent:{$ne:null}
+		}
+	}
+	if (q != null && following == false && username == null && parent != null){
+		query = {
+			$text:{
+				$search:q
+			},
+			timestamp:{
+				$lte:newStamp
+			},
+			parent:parent
+		}
+	}
+	else if(q == null && following != null && username != null){
+			res.send({
+				status: "OK",
+				items: []
+		})
+	}
+
+	else if(q == null && following == true && username == null && parent == null && (replies == false || replies == null)){
+		//need to get following users, and query for all tweets made by followings
+		query = {
+
+		}
+	}
+	else if (q == null && following == true && username == null && parent == null && replies == true){
+		// need to get following users and then query
+
+		query = {
+			timestamp:{
+				$lte:newStamp
+			},
+			parent:{$ne:null}
+		}
+	}
+	else if(q == null && following == true && username == null && parent != null){
+		//need to get following users and then query
+
+		query = {
+			timestamp:{
+				$lte:newStamp
+			},
+			parent:parent
+		}
+	}
+	else if(q == null && following == false && username != null && parent == null && (replies == false || replies == null)){
+		query = {
+			timestamp:{
+				$lte:newStamp
+			},
+			username:username
+		}
+	}
+	else if (q == null && following == false && username != null && parent == null && replies == true){
+			query = {
+				timestamp:{
+					$lte:newStamp
+				},
+				username:username,
+				parent:{$ne:null}
+			}
+	}
+	else if (q == null && following == false && username != null && parent != null){
+		query = {
+			timestamp:{
+				$lte:newStamp
+			},
+			username:username,
+			parent: parent
+		}
+	}
+	else if(q == null && following ==false && username == null && parent == null && (replies == false || replies == null)){
+		query = {
+			timestamp:{
+				$lte:newStamp
+			}
+		}
+	}
+	else if (q == null && following == false && username == null && parent == null && replies == true){
+		query = {
+			timestamp:{
+				$lte:newStamp
+			},
+			parent:{$ne:null}
+		}
+	}
+	else if(q == null && following == false && username == null && parent != null){
+		query = {
+			timestamp:{
+				$lte:newStamp
+			},
+			parent:parent
+		}
+	}
+	else{
+		if(q != null && following == true && username != null){
+			res.send({
+				status: "OK",
+				items: []
+			})
+		}
+		else if(q != null && following == true && username == null && parent == null && (replies == false || replies == null)){
+			//following is true NEED TO GET FOLLOWING!!
+			query = {
+				$text:{
+					$search:q
+				},
+				timestamp:{
+					$lte:newStamp
+				}
+			}
+		}
+		else if (q != null && following == true && username == null && parent == null && replies == true){
+			//following is true need to get following!!
+			query = {
+				$text:{
+					$search:q
+				},
+				timestamp:{
+					$lte:newStamp
+				},
+				parent:{$ne:null}
+			}
+		}
+		else if(q != null && following == true && username == null && parent != null){
+			//following is true@!@!@!
+			query = {
+				$text:{
+					$search:q
+				},
+				timestamp:{
+					$lte:newStamp
+				},
+				parent:parent
+			}
+		}
+		else if(q != null && following ==false && username != null && parent == null  && (replies == false || replies == null)){
+			query = {
+				$text:{
+					$search:q
+				},
+				timestamp:{
+					$lte:newStamp
+				},
+				username:username
+			}
+		}
+		else if (q != null && following == false && username != null && parent == null && replies == true){
+			query = {
+				$text:{
+					$search:q
+				},
+				timestamp:{
+					$lte:newStamp
+				},
+				username:username,
+				parent:{$ne:null}
+			}
+		}
+		else if (q != null && following == false && username != null && parent != null){
+			query = {
+				$text:{
+					$search:q
+				},
+				timestamp:{
+					$lte:newStamp
+				},
+				username:username,
+				parent:parent
+			}
+		}
+		else if(q != null && following ==false && username == null && parent == null  && (replies == false || replies == null)){
+			query = {
+				$text:{
+					$search:q
+				},
+				timestamp:{
+					$lte:newStamp
+				},
+			}
+		}
+		else if(q != null && following == false && username == null && parent == null && replies == true){
+			query = {
+				$text:{
+					$search:q
+				},
+				timestamp:{
+					$lte:newStamp
+				},
+				parent:{$ne:null}
+			}
+		}
+		else if(q != null && following == false && username == null && parent != null){
+			query = {
+				$text:{
+					$search:q
+				},
+				timestamp:{
+					$lte:newStamp
+				},
+				parent:parent
+			}
+		}
+		else if(q == null && following != null && username != null){
+			res.send({
+				status: "OK",
+				items: []
+			})
+		}
+		else if(q == null && following == true && username == null && parent == null && (replies == false || replies == null)){
+			//following is TRUE need to fix
+			query = {
+				timestamp:{
+					$lte:newStamp
+				}
+			}
+		}
+		else if (q == null && following == true && username == null && parent == null && replies == true){
+			//following is true
+			query = {
+				timestamp:{
+					$lte:newStamp
+				},
+				parent:{$ne:null}
+			}
+		}
+		else if (q == null && following == true && username == null && parent != null){
+			//following is true!!!!
+			query = {
+				timestamp:{
+					$lte:newStamp
+				},
+				parent:parent
+			}
+		}
+		else if(q == null && following == false && username != null && parent == null && (replies == false || replies == null)){
+			query = {
+				timestamp:{
+					$lte:newStamp
+				},
+				username:username
+			}
+		}
+		else if (q == null && following == false && username != null && parent == null && replies == true){
+			query = {
+				timestamp:{
+					$lte:newStamp
+				},
+				username:username,
+				parent:{$ne:null}
+			}
+		}
+		else if(q == null && following == false && username != null && parent != null){
+			query = {
+				timestamp:{
+					$lte:newStamp
+				},
+				username:username,
+				parent:parent
+			}
+		}
+		else if(q == null && following ==false && username == null && parent == null && (replies == false || replies == null)){
+			query = {
+				timestamp:{
+					$lte:newStamp
+				}
+			}
+		}
+		else if (q == null && following == false && username == null && parent == null && replies == true){
+			query = {
+				timestamp:{
+					$lte:newStamp
+				},
+				parent:{$ne:null}
+			}
+		}
+		else if(q == null && following == false && username == null && parent != null){
+			query = {
+				timeestamp:{
+					$lte:newStamp
+				},
+				parent:parent
+			}
+		}
+	}
 
 
-//console.log(query)
 
-
-	mongoClient.connect(url,function(err,db){
-		assert.equal(null,err);
-		
+///////=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-============================================================================================
 	if (req.body.limit != null && req.body.limit != ""){
+		if(q != null && following == true && username != null){
+			res.send({
+				status: "OK",
+				items: []
+			})
+		}
+		else if (q != null && following == true && username == null){
+
+		}
 		db.collection('tweets').find(query).sort({timestamp:-1}).limit(Number(req.body.limit)).toArray(function(err,doc){
 			if(err){
 				console.log(err)
@@ -482,7 +878,7 @@ else{
 				if (doc != null){
 					console.log(doc);
 					if(req.body.following == true){
-						connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.body.user) + ';',function(err,result){
+						connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.session.user) + ';',function(err,result){
 							if(err){
 								console.log(err)
 							}
@@ -493,8 +889,8 @@ else{
 								var parsingJsonArray = [];
 								for (var k = 0; k<= jsonArrayOfFollowing.length;k++){
 									if (k==jsonArrayOfFollowing.length){
-										for(var j = 0; j<=list.length; j++){
-											if(j==list.length){
+										for(var j = 0; j<=doc.length; j++){
+											if(j==doc.length){
 												var toReturn = {
 													status:"OK",
 													items: newList
@@ -502,8 +898,8 @@ else{
 												res.send(toReturn);
 											}
 											else{
-												if(parsingJsonArray.indexOf(list[j].username)>= 0){
-													newList.push(list[j])
+												if(parsingJsonArray.indexOf(doc[j].username)>= 0){
+													newList.push(doc[j])
 												}
 											}
 										}
@@ -526,7 +922,6 @@ else{
 			}
 		})
 	}
-
 	else{
 		db.collection('tweets').find(query).sort({timestamp:-1}).limit(25).toArray(function(err,doc){
 			if(err){
@@ -536,7 +931,7 @@ else{
 				if (doc != null){
 					console.log(doc);
 					if(req.body.following == true){
-						connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.body.user) + ';',function(err,result){
+						connection.query('SELECT User2 From Following where User1 =' + mysql.escape(req.session.user) + ';',function(err,result){
 							if(err){
 								console.log(err)
 							}
@@ -547,8 +942,8 @@ else{
 								var parsingJsonArray = [];
 								for (var k = 0; k<= jsonArrayOfFollowing.length;k++){
 									if (k==jsonArrayOfFollowing.length){
-										for(var j = 0; j<=list.length; j++){
-											if(j==list.length){
+										for(var j = 0; j<=doc.length; j++){
+											if(j==doc.length){
 												var toReturn = {
 													status:"OK",
 													items: newList
@@ -556,8 +951,8 @@ else{
 												res.send(toReturn);
 											}
 											else{
-												if(parsingJsonArray.indexOf(list[j].username)>= 0){
-													newList.push(list[j])
+												if(parsingJsonArray.indexOf(doc[j].username)>= 0){
+													newList.push(doc[j])
 												}
 											}
 										}
@@ -580,29 +975,24 @@ else{
 			}
 		})
 	}
+})
 
-})
-})
 app.delete('/item/:id',function(req,res){
 	//console.log(req.params.id);
-	var id = require('mongodb').ObjectId(req.params.id);
-	mongoClient.connect(url,function(err,db){
-	assert.equal(null,err);
-	db.collection('tweets').remove({'_id': id},function(err,doc){
+	//var id = require('mongodb').ObjectId(req.params.id);
+	var id = req.params.id;
+	db.collection('tweets').remove({"id": id},function(err,doc){
 		if (err){
-			//console.log(err)
 			res.send({
 				status : "error"
 			});
 		}
 		else{
-			//console.log("TWEET DELETED");
 			res.send({
 				status : "OK"
 			})
 		}
 	})
-})
 })
 
 app.get('/user/:username',function(req,res){
@@ -742,11 +1132,47 @@ app.post('/follow',function(req,res){
 	}
 })
 
+
+app.post('/item/:id/like',function(req,res){
+	if(req.body.like == true){
+		console.log(req.params.id);
+			db.collection('tweets').update({"id": req.params.id},{$inc:{'LikeCounter':1}},function(err,result){
+			if (err){
+				console.log(err);
+				res.send({status:"error"})
+			}
+			var jsonToSend = {
+				status: "OK"
+			}
+			console.log(result);
+			res.send(jsonToSend);
+		})
+	}
+else if(req.body.like == false){
+		console.log("in false");
+
+		db.collection('tweets').update({"id": req.params.id},{$inc:{'LikeCounter':-1}},function(err,result){
+			if (err){
+				console.log(err);
+				res.send({status:"error"})
+			}
+			var jsonToSend = {
+				status: "OK"
+			}
+			console.log(result);
+			res.send(jsonToSend);
+		})
+	}
+else{
+	res.send("??");
+}
+})
+
+
+
+/*
 app.listen(8080, "172.31.64.118",function(){
 	console.log("Server listening on port " + 9000);
-})
-/*
-app.listen(8080,"0.0.0.0",function(){
-	console.log("server listening on port " + 8080);
-})
-*/
+})*/
+
+
